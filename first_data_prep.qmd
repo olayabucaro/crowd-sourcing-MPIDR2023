@@ -1,0 +1,179 @@
+---
+title: "First Data Preparation"
+format: html
+editor: visual
+---
+
+## Clean full familinx data
+
+Reduce the full data down to working size
+
+#### Setup
+```{r}
+
+# Load packages
+library(data.table)
+
+# Parameters
+path = "U:\\Documents\\familinx\\profiles-anon.txt"
+
+```
+
+## Reading the full data
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+
+data <- fread(file = path, na.strings = c("*", ""), encoding = "UTF-8")
+
+```
+## Check NAs
+
+```{r}
+
+na_frac <-sapply(data, function(y) sum(length(which(is.na(y))))/nrow(data)*100)
+
+na_frac <- data.frame(na_frac)
+
+na_frac
+
+```
+
+## Remove uniformative columns
+
+```{r}
+
+data[, c("current_residence_location_resolved_externally","current_residence_resolved_extern_confidence", "current_residence_resolved_extern_type", "birth_date_circa", "birth_location_resolved_externally", "birth_location_resolved_extern_confidence", "birth_location_resolved_extern_type", "death_date_circa", "death_location_resolved_externally", "death_location_resolved_extern_confidence", "death_location_resolved_extern_type", "burial_date_circa", "burial_location_resolved_externally", "burial_location_resolved_extern_confidence", "burial_location_resolved_extern_type", "baptism_date_circa", "baptism_location_resolved_externally", "baptism_location_resolved_extern_confidence",  "baptism_location_resolved_extern_type","cause_of_death"):=NULL] 
+
+```
+
+
+### Function to only keep profiles with relations
+
+```{r}
+# profile is the dataset with all the individual information
+# links is the dataset with all the child-parent relations 
+# select only the observations that are present (as a child or as a parent) in the links dataset
+subset_profiles <- function(links, profile) {
+  
+  ids <- unique(unlist(links))
+  prof_sub <- profile[ profile$profileid %in% ids, ]
+  
+  return(prof_sub)
+  
+}
+```
+
+```{r}
+# function to extract the location from the coordinates
+# use map.where function from mapdata package: strings naming the region identified by the coordinates
+# extract location for births, baptisms, deaths, burials
+# DT ver
+
+read_coordinates <- function(profiles, birth_coord=T,
+                             baptism_coord=T,burial_coord=T,death_coord=T){
+  
+  if(birth_coord){
+    profiles$birth_location_latitude = fifelse(is.na(profiles$birth_location_longitude) |
+                                                profiles$birth_location_latitude==0,
+                                              NA_real_,
+                                              profiles$birth_location_latitude)
+    
+    profiles$birth_location_longitude = fifelse(is.na(profiles$birth_location_latitude) |
+                                                 profiles$birth_location_longitude==0,NA_real_,
+                                               profiles$birth_location_longitude)
+    
+    data_temp = profiles[!(is.na(birth_location_longitude)) &
+                         !(is.na(birth_location_latitude))]
+    
+    data_temp$birth_coord_country = map.where(database = "world",
+                                              data_temp$birth_location_longitude,
+                                              data_temp$birth_location_latitude)
+    
+    data_temp <- data_temp[, .(profileid,birth_coord_country)]
+    profiles <-  profiles[data_temp, on="profileid"]
+    
+  }
+  if(baptism_coord){
+    profiles$baptism_location_latitude = fifelse(is.na(profiles$baptism_location_longitude) |
+                                                  profiles$baptism_location_latitude==0,
+                                                NA_real_,
+                                                profiles$baptism_location_latitude)
+    
+    profiles$baptism_location_longitude = fifelse(is.na(profiles$baptism_location_latitude) |
+                                                   profiles$baptism_location_longitude==0,
+                                                 NA_real_,
+                                                 profiles$baptism_location_longitude)
+    
+    
+    data_temp = profiles[!(is.na(baptism_location_longitude)) &
+                         !(is.na(baptism_location_latitude))]
+    
+    data_temp$baptism_coord_country = map.where(database = "world",
+                                                data_temp$baptism_location_longitude,
+                                                data_temp$baptism_location_latitude)
+
+    data_temp <- data_temp[, .(profileid,baptism_coord_country)]
+    profiles <-  profiles[data_temp, on="profileid"]
+  }
+  
+  if(death_coord){
+    profiles$death_location_latitude = fifelse(is.na(profiles$death_location_longitude) |
+                                                profiles$death_location_latitude==0,
+                                              NA_real_,
+                                              profiles$death_location_latitude)
+    
+    profiles$death_location_longitude = fifelse(is.na(profiles$death_location_latitude) |
+                                                 profiles$death_location_longitude==0,
+                                               NA_real_,
+                                               profiles$death_location_longitude)
+    
+    data_temp = profiles[!(is.na(death_location_longitude)) &
+                         !(is.na(death_location_latitude))]
+  
+    
+    data_temp$death_coord_country = map.where(database = "world",
+                                              data_temp$death_location_longitude,
+                                              data_temp$death_location_latitude)
+
+    data_temp <- data_temp[, .(profileid,death_coord_country)]
+    profiles <-  profiles[data_temp, on="profileid"]
+    
+  }
+  if(burial_coord){
+    profiles$burial_location_latitude = fifelse(is.na(profiles$burial_location_longitude) |
+                                                 profiles$burial_location_latitude==0,
+                                               NA_real_,
+                                               profiles$burial_location_latitude)
+    
+    profiles$burial_location_longitude = fifelse(is.na(profiles$burial_location_latitude) |
+                                                  profiles$burial_location_longitude==0,
+                                                NA_real_,
+                                                profiles$burial_location_longitude)
+    
+    data_temp = profiles[!(is.na(burial_location_longitude)) &
+                         !(is.na(burial_location_latitude))]
+    
+    data_temp$burial_coord_country = map.where(database = "world",
+                                               data_temp$burial_location_longitude,
+                                               data_temp$burial_location_latitude)
+
+    data_temp <- data_temp[, .(profileid,burial_coord_country)]
+    profiles <-  profiles[data_temp, on="profileid"]
+  }
+  return(profiles)
+}
+```
+
+```{r}
+library(mapdata)
+
+# extract the locations from the coordinates 
+data_recoded = read_coordinates(data)
+# keep only the country name from the strings with locations
+data_recoded$birth_coord = sub(":.*", "", data_recoded$birth_coord_country)
+data_recoded$death_coord = sub(":.*", "", data_recoded$death_coord_country)
+data_recoded$burial_coord = sub(":.*", "", data_recoded$burial_coord_country)
+data_recoded$baptism_coord = sub(":.*", "", data_recoded$baptism_coord_country)
+```
