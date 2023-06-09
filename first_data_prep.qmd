@@ -8,27 +8,35 @@ editor: visual
 
 Reduce the full data down to working size
 
-#### Setup
+### Setup
+
+Load necessary packages and paths to raw data in N drive and save location of
+cleaned file
+
 ```{r}
 
 # Load packages
 library(data.table)
+library(mapdata)
 
 # Parameters
-path = "U:\\Documents\\familinx\\profiles-anon.txt"
+path_data = "N:\\Incubator2023_crowd\\ogdata\\profiles-anon.txt"
+path_links = "N:\\Incubator2023_crowd\\ogdata\\relations-anon.txt"
+save_path = "N:\\Incubator2023_crowd\\moddata\\"
 
 ```
 
 ## Reading the full data
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
 ```{r}
 
-data <- fread(file = path, na.strings = c("*", ""), encoding = "UTF-8")
+data <- fread(file = path_data, na.strings = c("*", ""), encoding = "UTF-8")
 
 ```
-## Check NAs
+### Check NAs
+
+Precentage of missng values for all columns in raw data
 
 ```{r}
 
@@ -40,7 +48,9 @@ na_frac
 
 ```
 
-## Remove uniformative columns
+### Remove uniformative columns
+
+Columns with no relevant information is removed from the data
 
 ```{r}
 
@@ -48,13 +58,16 @@ data[, c("current_residence_location_resolved_externally","current_residence_res
 
 ```
 
+## Function to only keep profiles with relations
 
-### Function to only keep profiles with relations
+Function by Andrea
 
 ```{r}
+
 # profile is the dataset with all the individual information
 # links is the dataset with all the child-parent relations 
 # select only the observations that are present (as a child or as a parent) in the links dataset
+
 subset_profiles <- function(links, profile) {
   
   ids <- unique(unlist(links))
@@ -63,9 +76,26 @@ subset_profiles <- function(links, profile) {
   return(prof_sub)
   
 }
+
 ```
 
+Read links data and subset the full data
+
 ```{r}
+
+# Read links data and run subset function
+
+links <- fread(file = path_links, na.strings = c("*", ""))
+data <- subset_profiles(links, data)
+
+```
+
+## Match coordinates
+
+Function to extract location from coordinates by Andrea (rewritten to use data.table)
+
+```{r}
+
 # function to extract the location from the coordinates
 # use map.where function from mapdata package: strings naming the region identified by the coordinates
 # extract location for births, baptisms, deaths, burials
@@ -92,7 +122,7 @@ read_coordinates <- function(profiles, birth_coord=T,
                                               data_temp$birth_location_latitude)
     
     data_temp <- data_temp[, .(profileid,birth_coord_country)]
-    profiles <-  profiles[data_temp, on="profileid"]
+    profiles <-  data_temp[profiles, on="profileid"]
     
   }
   if(baptism_coord){
@@ -115,7 +145,7 @@ read_coordinates <- function(profiles, birth_coord=T,
                                                 data_temp$baptism_location_latitude)
 
     data_temp <- data_temp[, .(profileid,baptism_coord_country)]
-    profiles <-  profiles[data_temp, on="profileid"]
+    profiles <-  data_temp[profiles, on="profileid"]
   }
   
   if(death_coord){
@@ -138,7 +168,7 @@ read_coordinates <- function(profiles, birth_coord=T,
                                               data_temp$death_location_latitude)
 
     data_temp <- data_temp[, .(profileid,death_coord_country)]
-    profiles <-  profiles[data_temp, on="profileid"]
+    profiles <-  data_temp[profiles, on="profileid"]
     
   }
   if(burial_coord){
@@ -160,14 +190,17 @@ read_coordinates <- function(profiles, birth_coord=T,
                                                data_temp$burial_location_latitude)
 
     data_temp <- data_temp[, .(profileid,burial_coord_country)]
-    profiles <-  profiles[data_temp, on="profileid"]
+    profiles <-  data_temp[profiles, on="profileid"]
   }
+    
   return(profiles)
 }
+
 ```
 
+### Run the coordinate matching
+
 ```{r}
-library(mapdata)
 
 # extract the locations from the coordinates 
 data_recoded = read_coordinates(data)
@@ -176,4 +209,13 @@ data_recoded$birth_coord = sub(":.*", "", data_recoded$birth_coord_country)
 data_recoded$death_coord = sub(":.*", "", data_recoded$death_coord_country)
 data_recoded$burial_coord = sub(":.*", "", data_recoded$burial_coord_country)
 data_recoded$baptism_coord = sub(":.*", "", data_recoded$baptism_coord_country)
+
+```
+
+## Save data to file
+
+```{r}
+
+fwrite(data, paste0(save_path, "moddata1.csv"))
+
 ```
