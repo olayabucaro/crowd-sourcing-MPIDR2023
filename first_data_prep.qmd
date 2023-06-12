@@ -216,6 +216,7 @@ data_recoded$baptism_coord = sub(":.*", "", data_recoded$baptism_coord_country)
 
 ```{r}
 
-fwrite(data, paste0(save_path, "moddata1.csv"))
+fwrite(data, paste0(save_path, "moddata1.csv")) # Data without coordinate matching
+fwrite(data_recoded, paste0(save_path, "moddata2.csv")) # Data with coordinate matching
 
 ```

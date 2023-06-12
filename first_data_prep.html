@@ -399,7 +399,8 @@ cause_of_death                                 98.50092</code></pre>
 <section id="save-data-to-file" class="level2">
 <h2 class="anchored" data-anchor-id="save-data-to-file">Save data to file</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fwrite</span>(data, <span class="fu">paste0</span>(save_path, <span class="st">"moddata1.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fwrite</span>(data, <span class="fu">paste0</span>(save_path, <span class="st">"moddata1.csv"</span>)) <span class="co"># Data without coordinate matching</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fwrite</span>(data_recoded, <span class="fu">paste0</span>(save_path, <span class="st">"moddata2.csv"</span>)) <span class="co"># Data with coordinate matching</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 
