@@ -36,7 +36,7 @@ data <- fread(file = path_data, na.strings = c("*", ""), encoding = "UTF-8")
 ```
 ### Check NAs
 
-Precentage of missng values for all columns in raw data
+Percentage of missing values for all columns in raw data
 
 ```{r}
 
