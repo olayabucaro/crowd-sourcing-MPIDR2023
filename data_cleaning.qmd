@@ -13,6 +13,7 @@ Reduce the full data down to working size
 Load necessary packages and paths to raw data in N drive and save location of cleaned file
 
 ```{r}
+#| include: false
 
 # Load packages
 library(data.table)
@@ -28,6 +29,7 @@ save_path = "N:\\Incubator2023_crowd\\moddata\\"
 ## Reading the full data
 
 ```{r}
+#| include: false
 
 data <- fread(file = path_data, na.strings = c("*", ""), encoding = "UTF-8")
 
@@ -81,11 +83,20 @@ subset_profiles <- function(links, profile) {
 Read links data and subset the full data
 
 ```{r}
+#| include: false
 
 # Read links data and run subset function
 
 links <- fread(file = path_links, na.strings = c("*", ""))
 data <- subset_profiles(links, data)
+
+```
+
+### Save moddata1 data to file (without coordiate matching)
+
+```{r}
+
+fwrite(data, paste0(save_path, "moddata1.csv")) # Data without coordinate matching
 
 ```
 
@@ -211,11 +222,10 @@ data_recoded$baptism_coord = sub(":.*", "", data_recoded$baptism_coord_country)
 
 ```
 
-## Save data to file
+### Save moddata2 data to file (With coordiate matching using Low (mid) resolution World Map)
 
 ```{r}
 
-fwrite(data, paste0(save_path, "moddata1.csv")) # Data without coordinate matching
 fwrite(data_recoded, paste0(save_path, "moddata2.csv")) # Data with coordinate matching
 
 ```
