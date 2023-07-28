@@ -204,9 +204,11 @@ Extract entries with free text information but no birth/death location to reduce
 ```{r}
 #| output: false
 
-freeTextBirth <- data %>% filter(!is.na(birth_location_place_name) & is.na(birth_location_country))
+freeTextBirth <- data %>%
+  filter(!is.na(birth_location_place_name) & is.na(birth_location_country))
 
-freeTextDeath <- data %>% filter(!is.na(death_location_place_name) & is.na(death_location_country))
+freeTextDeath <- data %>%
+  filter(!is.na(death_location_place_name) & is.na(death_location_country))
 
 freeTextBirth <- freeTextBirth %>% 
   mutate(
@@ -295,8 +297,9 @@ freeTextBurialCountry <- data %>%
                                        "country.name.en.regex", "country.name")
     )
 
-data <- data %>% rows_patch(freeTextBaptismCountry, by='profileid') %>% 
-                 rows_patch(freeTextBurialCountry, by="profileid")
+data <- data %>% 
+  rows_patch(freeTextBaptismCountry, by='profileid') %>% 
+  rows_patch(freeTextBurialCountry, by="profileid")
 ```
 
 Drop extra columns
@@ -305,7 +308,8 @@ Drop extra columns
 data <- data %>% 
   select(
     -ends_with("longitude"),-ends_with("latitude"), -ends_with("name"),
-    -ends_with("state"), -starts_with("current"), -ends_with("city"))
+    -ends_with("state"), -starts_with("current"), -ends_with("city")
+    )
 ```
 
 ## Write to csv

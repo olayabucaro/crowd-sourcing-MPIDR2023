@@ -1,19 +1,11 @@
----
-title: "Data UK-IE Birth Extraction"
-format: gfm
-params:
-  path_data: "N:\\Incubator2023_crowd\\moddata\\moddata2.csv"
-  path_links: "N:\\Incubator2023_crowd\\ogdata\\relations-anon.txt"
-  save_path: "N:\\Incubator2023_crowd\\moddata\\"
----
+Data UK-IE Birth Extraction
+================
 
 ## Extract indivuals born in UK or Ireland
 
 Load in packages/data
 
-```{r}
-#| output: false
-
+``` r
 library(data.table)
 library(dplyr)
 
@@ -21,9 +13,10 @@ data <- fread(params$path_data, na.strings='', encoding="UTF-8")
 ties <- fread(params$path_links)
 ```
 
-Update: took out the year restriction: just want to see what it looks like as a whole
+Update: took out the year restriction: just want to see what it looks
+like as a whole
 
-```{r}
+``` r
 subsetData <- data %>% 
   filter(
     !is.na(birth_location_country), !is.na(death_location_country),
@@ -33,7 +26,7 @@ subsetData <- data %>%
 
 Drop birth/death columns to lowercase
 
-```{r}
+``` r
 subsetData$birth_location_country<- tolower(subsetData$birth_location_country)
 subsetData$death_location_country <- tolower(subsetData$death_location_country)
 ```
@@ -42,8 +35,7 @@ subsetData$death_location_country <- tolower(subsetData$death_location_country)
 
 Various names for the UK and areas in the UK
 
-```{r}
-
+``` r
 uk <- c('united kingdom', 'x-england', 'england', 'x-scotland', 'x-united-kingdom',
         'scotland', '(present uk)', 'x-great-britain', 'x-wales', 'gb',
         'x-northern-ireland', 'uk', 'northern ireland', 'england, uk', 'u.k.',
@@ -69,12 +61,11 @@ uk <- c('united kingdom', 'x-england', 'england', 'x-scotland', 'x-united-kingdo
         "aberdeen city", "englang", "england,uk", "england or pa", "wales or england",
         "verenigd koninkrijk", "unitedkingdom", "united-kingdom", "uk:scotland:barra",
         "uk, england", "u. k.", "heathfield, sussex, england")
-
 ```
 
 Clean for the UK in the Birth/Death Columns
 
-```{r}
+``` r
 ukEntries <- subsetData %>% 
   mutate(
     birth_location_country = case_when(birth_location_country %in% uk  ~ "United Kingdom",
@@ -90,7 +81,7 @@ ukEntries <- subsetData %>%
 
 Add some more observations with regex
 
-```{r}
+``` r
 non_ukEntries <- subsetData %>% 
   mutate(
     birth_location_country = case_when(birth_location_country %in% uk  ~ "United Kingdom",
@@ -119,13 +110,11 @@ ukEntries2 <- ukEntries2 %>%
     )
 
 ukEntries <- rbind(ukEntries, ukEntries2)
-
 ```
 
 ### 1.1: Filter for Ireland in the birth countries
 
-```{r}
-
+``` r
 ieEntries <- non_ukEntries[grepl("(ireland)|(éire)|(eire)|\\b(ie)\\b", non_ukEntries$birth_location_country)]
 
 ieEntries <- ieEntries %>% 
@@ -139,23 +128,19 @@ ieEntries <- ieEntries %>%
                                              ieEntries$death_location_country) ~ "Ireland",
                                             TRUE ~ death_location_country)
     )
-
 ```
 
 Check most frequent death locations
 
-```{r}
-
+``` r
 ukFreqDeath <- data.table(table(ukEntries$death_location_country))
-
 ```
 
 ### 2: Clean Death Locations
 
 Starting List: US, South Africa, Australia, Canada, NZ, IE
 
-```{r}
-
+``` r
 us <- c("us", 'usa', 'united states', 'united states of america', 'america', 
         '(present usa)', 'colonial america', 'province of new york', 'new netherland colony',
         'new england colonies', 'new england', 'present united states', 'american colonies', 
@@ -197,25 +182,21 @@ ireland <- c('ireland', 'ie', 'republic of ireland', 'eire', 'bydoney,tyrone ,ir
              'ireland, uk', 'uk (ireland)', 'ireland ???', 'ireland (eire)', 'ireland.',
              'or ireland', 'kilkenny', 'tipperary', 'waterford', "ulster", "galway",
              "down", "carlow") 
-
 ```
 
 Bonus Wildcards: France, India, Israel
 
-```{r}
-
+``` r
 france <- c('fr', 'france', 'francia', 'frankreich') 
 
 india <- c('india', 'in')
 
 israel <- c('israel', 'il', "ישראל", "ישראל israel")
-
 ```
 
 Actual Text Clean Now
 
-```{r}
-
+``` r
 ukEntries <- ukEntries %>% 
   mutate(
     death_location_country = case_when(death_location_country %in% us ~ "United States of America",
@@ -291,30 +272,24 @@ ieEntries <- ieEntries %>%
     death_location_country = case_when(death_location_country %in% ireland ~ "Ireland",
                                        TRUE ~ death_location_country)
     )
-
 ```
 
 Check most frequent death locations again
 
-```{r}
-
+``` r
 ukFreqDeath <- data.table(table(ukEntries$death_location_country))
-
 ```
 
 crosstabs
 
-```{r}
-
+``` r
 ukCt <- data.table(table(ukEntries$birth_location_country, ukEntries$death_location_country)) %>% 
   filter(V1 != V2 & N > 100)
-
 ```
 
 ## Merge and do some additonal cleaning
 
-```{r}
-
+``` r
 "%ni%" <- Negate("%in%") # define function
 
 # rbind into one big dt
@@ -339,13 +314,10 @@ ukIrelandFreqDeath <- data.table(table(cleanUKIreland$death_location_country))
 
 ct <- data.table(table(cleanUKIreland$birth_location_country, cleanUKIreland$death_location_country)) %>% 
   filter(V1 != V2 & N > 30)
-
 ```
 
 ### Write data to CSV
 
-```{r}
-
+``` r
 fwrite(cleanUKIreland, paste0(params$save_path, "uk_ireland.csv"))
-
 ```
