@@ -7,34 +7,31 @@
 
 ## Code
 
-### data_cleaning
+### cleaning_01
 
 | File name   | Description |
 | ----------- | ----------- |
-| data_imputation.qmd    | Cleaned data without coordinate matching |
-| data_preparation.qmd    | Cleaned data with coordinate matching |
-
-### data_filter
-
-| File name   | Description |
-| ----------- | ----------- |
-| data_uk-ie_birth_filter.qmd    | Cleaned data without coordinate matching |
+| data_preparation.qmd    | Cleaned raw data and coordinate match |
+| data_imputation.qmd    | Impute location information from other columns |
 
 
-### data_kinship
+### filter_02
 
 | File name   | Description |
 | ----------- | ----------- |
-|data_add_kinship.qmd   | Cleaned data without coordinate matching |
+| data_uk-ie_birth_filter.qmd | Filter data to only include UK/IE births |
 
+
+### kinship_03
+
+| File name   | Description |
+| ----------- | ----------- |
+|data_add_kinship.qmd   | Add kinship information to datas |
 
 ## Data
 
 | Data name   | Description |
 | ----------- | ----------- |
-| moddata1.csv    | Cleaned data without coordinate matching |
-| moddata2.csv    | Cleaned data with coordinate matching |
-| moddata3.csv    | Cleaned data with coordinate matching and "cause_of_death" variable |
-| moddata4.csv    | ? |
-| moddatafinal.csv | ? |
-| moddatafinal_LASTTIMEIPROMISE.csv   | ? |
+| moddata1.csv    | Cleaned raw data with coordinate matching |
+| moddata2.csv    | Cleaned data also with imputed information |
+| moddatafinal_LASTTIMEIPROMISE.csv   | Final dataset for analysis |
