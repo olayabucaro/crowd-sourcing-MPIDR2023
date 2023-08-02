@@ -1,0 +1,22 @@
+Type: Compendium
+Package: crowd-source
+Title: Using online crowdsourced genealogies to measure the migrant mortality advantage between the 18th and 19th centuries
+Version: 0.0.1
+Authors@R: 
+    person("Elena", "Pojman", , "first.last@example.com", role = c("aut", "cre")),
+    person("Duke", "Mwedzi", , "first.last@example.com", role = c("aut", "cre")),
+    person("Orlando", "Olaya Bucaro", , "first.last@example.com", role = c("aut", "cre")),
+    person("Stephanie", "Zhang", , "first.last@example.com", role = c("aut", "cre"))
+Description: Data cleaning and analysis for the crowd source project
+License: What license it uses
+Depends: 
+    brms,
+    countrycode,
+    data.table,
+    dplyr,
+    mapdata,
+    rmarkdown,
+    shiny,
+    tidyr
+Encoding: UTF-8
+LazyData: true

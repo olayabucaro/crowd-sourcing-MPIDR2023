@@ -1,5 +1,10 @@
 # crowd-sourcing-MPIDR2023
 
+<!-- badges: start -->
+[![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/olayabucaro/crowd-sourcing-MPIDR2023/master?urlpath=rstudio)
+<!-- badges: end -->
+
+
 ## Code
 
 ### data_cleaning

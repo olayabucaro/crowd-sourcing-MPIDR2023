@@ -1,0 +1,62 @@
+---
+title: "Analysis"
+format: gfm
+---
+
+# Final analysis
+
+## Data preperation
+
+```{r}
+#| output: false
+
+library(data.table)
+library(brms)
+library(dplyr)
+
+#data <- fread("N:/Incubator2023_crowd/moddata/moddatafinal_LASTTIMEIPROMISE.csv")
+data <- fread("../data/moddatafinal_LASTTIMEIPROMISE.csv")
+
+data <- na.omit(data) 
+
+data$migrant <- as.factor(data$migrant)
+data$birth10 <- as.factor(data$birth10)
+data$death10 <- as.factor(data$death10)
+data$gender <- as.factor(data$gender)
+data$firstmale <- as.factor(data$firstmale)
+
+data <- data %>% 
+  mutate(
+    sib_size_cat = case_when(sib.ct == 0 ~ '0', sib.ct == 1 ~ '1',
+                             sib.ct == 2 ~ '2', sib.ct >= 3 & sib.ct <= 5 ~ '3-5',
+                             sib.ct >= 6 ~ '6+')
+    )
+data$sib_size_cat <- factor(data$sib_size_cat, levels = c("0",'1', '2', '3-5', '6+'))
+
+```
+
+## Model
+
+```{r}
+#| output: false
+
+m1 <- brm(deathage ~ migrant * birth10 + firstmale + sib_size_cat + (1|famid), 
+          data = data, cores = 4, seed = 1337)
+
+```
+
+Estimates
+
+```{r}
+
+summary(m1)
+
+```
+
+Plots
+
+```{r}
+
+conditional_effects(f1)
+
+```
