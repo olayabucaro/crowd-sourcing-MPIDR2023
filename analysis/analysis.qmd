@@ -11,10 +11,10 @@ format: gfm
 #| output: false
 
 library(data.table)
+install.packages("brms")
 library(brms)
 library(dplyr)
 
-#data <- fread("N:/Incubator2023_crowd/moddata/moddatafinal_LASTTIMEIPROMISE.csv")
 data <- fread("../data/moddatafinal_LASTTIMEIPROMISE.csv")
 
 data <- na.omit(data) 
