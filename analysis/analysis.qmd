@@ -1,6 +1,6 @@
 ---
 title: "Analysis"
-format: html
+format: gfm
 editor_options: 
   chunk_output_type: console
 ---
@@ -8,13 +8,15 @@ editor_options:
 ## Analysis
 
 ```{r packages & data}
-library(tidyverse)
+library(dplyr)
 library(stargazer)
 library(marginaleffects)
 library(lme4)
 library(margins)
+library(data.table)
+library(ggplot2)
 
-data <- data.table::fread("./data/moddatafinal_LASTTIMEIPROMISE.csv")
+data <- fread("../data/moddatafinal_LASTTIMEIPROMISE.csv")
 
 ```
 
@@ -123,13 +125,13 @@ fe1.plot %>%
   labs(x = "", y = "estimated age at death") 
 
 # save graph
-ggsave(
-  plot = last_plot(),
-  filename = "graphs/fe1_migrant.png",
-  width = 5,
-  height = 5,
-  units = "in"
-)
+# ggsave(
+#   plot = last_plot(),
+#   filename = "graphs/fe1_migrant.png",
+#   width = 5,
+#   height = 5,
+#   units = "in"
+# )
 
 fe1.plot.birth10 <- plot_predictions(fe1, by = c("birth10", "migrant"), draw = F)
 
@@ -154,17 +156,18 @@ fe1.plot.birth10 %>%
   labs(x = "birth cohort", y = "estimated age at death") 
 
 # save graph
-ggsave(
-  plot = last_plot(),
-  filename = "graphs/fe1_cohort.png",
-  width = 8.5,
-  height = 5,
-  units = "in"
-)
+# ggsave(
+#   plot = last_plot(),
+#   filename = "graphs/fe1_cohort.png",
+#   width = 8.5,
+#   height = 5,
+#   units = "in"
+# )
 
 ```
 
-```{r alt migrant - modified samples}
+```{r alt migrant - modified samples fe1}
+omit.vars <- c("birth10", "sib_size_cat", "gender")
 
 fe1.lim <- lmer(deathage ~ migrant * birth10 + gender + sib_size_cat + (1|famid),
          data = newdata) 
@@ -227,6 +230,9 @@ print(fe2.mm)
 ```
 
 ```{r death country plots}
+
+fe2.plot <- plot_predictions(fe1, by = "death_country", draw = F)
+
 fe2.plot %>% 
   ggplot(aes(
     x = death_country,
@@ -247,19 +253,19 @@ fe2.plot %>%
   labs(x = "country of death", y = "estimated age at death") 
 
 # save graph
-ggsave(
-  plot = last_plot(),
-  filename = "graphs/fe2_countries.png",
-  width = 8.5,
-  height = 5,
-  units = "in"
-)
+# ggsave(
+#   plot = last_plot(),
+#   filename = "graphs/fe2_countries.png",
+#   width = 8.5,
+#   height = 5,
+#   units = "in"
+# )
 
 
 
 ```
 
-```{r alt migrant - modified samples}
+```{r alt migrant - modified samples fe2}
 
 fe2.lim <- lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|famid),
          data = newdata) 
@@ -310,7 +316,7 @@ tbl <- stargazer(fe1, fe1.lim, fe1.sibs, fe2, fe2.lim, fe2.sibs,
           dep.var.caption = "Dependent variable: Age at Death",
           dep.var.labels = "")
 
-write(tbl, file = "tables/Results_table_compsamples.html", sep = ",")
+#write(tbl, file = "tables/Results_table_compsamples.html", sep = ",")
 
 ```
 
@@ -330,6 +336,6 @@ tbl <- stargazer(fe1, fe2,
                  add.lines=list(c("Sibling random effects", "Yes", "Yes"))
 )
 
-write(tbl, file = "tables/Results_table.html", sep = ",")
+#write(tbl, file = "tables/Results_table.html", sep = ",")
 
 ```

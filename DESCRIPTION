@@ -10,14 +10,17 @@ Authors@R:
 Description: Data cleaning and analysis for the crowd source project
 License: What license it uses
 Depends: 
-    rstan,
-    brms,
     countrycode,
     data.table,
     dplyr,
     mapdata,
     rmarkdown,
     shiny,
-    tidyr
+    tidyr,
+    stargazer,
+    marginaleffects
+    lme4,
+    margins,
+    ggplot2
 Encoding: UTF-8
 LazyData: true
