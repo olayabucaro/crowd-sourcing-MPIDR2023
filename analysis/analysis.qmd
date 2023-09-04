@@ -10,13 +10,14 @@ editor_options:
 ```{r packages & data}
 library(dplyr)
 library(stargazer)
+install.packages("marginaleffects")
 library(marginaleffects)
 library(lme4)
 library(margins)
 library(data.table)
 library(ggplot2)
 
-data <- fread("../data/moddatafinal_LASTTIMEIPROMISE.csv")
+data <- fread("./data/moddatafinal_LASTTIMEIPROMISE.csv")
 
 ```
 
