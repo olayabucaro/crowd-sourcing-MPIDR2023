@@ -1,0 +1,343 @@
+---
+title: "Analysis"
+format: gfm
+---
+
+## Analysis
+
+```{r packages & data}
+#| output: false
+
+library(dplyr)
+library(stargazer)
+library(marginaleffects)
+library(lme4)
+library(margins)
+library(data.table)
+library(ggplot2)
+
+data <- fread("../data/moddatafinal_LASTTIMEIPROMISE.csv")
+
+```
+
+## Format and summarize variables
+
+```{r correct format of variables}
+data <- data %>% 
+  mutate(
+    migrant = factor(migrant, levels = c(0, 1),
+                     labels = c("nonmigrant", "migrant")),
+    death_country = factor(death_country, levels = c("UK/Ireland", "Canada",
+                                                     "South Africa", "Australia",
+                                                     "New Zealand",
+                                                     "United States of America")),
+    birth10 = as.factor(birth10),
+    death10 = as.factor(death10),
+    gender = as.factor(gender),
+    sib_size_cat = as.factor(sib_size_cat),
+    birthorder_cat = as.factor(birthorder_cat),
+    famid = as.numeric(famid),
+    firstborn = factor(firstborn, levels = c('missing', '0', '1'))
+    )
+```
+
+```{r descrtiptives}
+summary(data$deathage)
+summary(data$migrant)
+table(data$death_country)
+summary(data$birth10)
+summary(data$death10)
+summary(data$gender)
+summary(data$sib_size_cat)
+summary(data$famid)
+table(data$firstborn)
+```
+
+```{r newdata}
+
+# make df where everyone has a parent in the data
+newdata <- data %>% 
+  filter(miss.famid == F) %>% 
+  select(-miss.famid)
+
+summary(newdata$sib_size_cat)
+
+# make df where only people with siblings are in data
+newerdata <- newdata %>% 
+  filter(sib.ct > 0)
+
+```
+
+## Family effects models
+
+```{r Family effects model - migrant}
+
+# model 1 - migrant
+fe1 <- lmer(deathage ~ migrant * birth10 + gender + sib_size_cat + (1|famid),
+            data = data) 
+
+summary(fe1)
+
+# plots here are kind of boring unless you do them by birth10 which isn't part
+# of our RQ
+
+fe1.plot <- plot_predictions(fe1, by = "migrant", draw = F)
+
+# fe1.mm <- margins(lmer(deathage ~ migrant * birth10 + gender + sib_size_cat + (1|famid),
+#             data = data), variables = "migrant")
+# print(fe1.mm)
+# 
+# fe1.mm.bc <- margins(lmer(deathage ~ migrant * birth10 + gender + sib_size_cat + (1|famid),
+#             data = data), variables = c("migrant", "birth10"))
+# print(fe1.mm.bc)
+
+```
+
+```{r migrant plots, include=FALSE, echo=FALSE, eval=FALSE}
+# fe1.mm.bc %>% 
+#   ggplot(aes(
+#     x = birth10,
+#     y = dydx_migrantmigrant
+#   )) + 
+#   geom_point(size = 3) 
+# +
+#   theme(legend.position = "bottom",
+#         legend.text = element_text(size = 12),
+#         axis.text = element_text(size = 12),
+#         axis.title = element_text(size = 13)) + 
+#   scale_x_discrete(labels = c("nonmigrant", "migrant")) +
+#   scale_y_continuous(limits = c(64, 72)) +
+#   labs(x = "", y = "estimated age at death") 
+
+fe1.plot %>% 
+  ggplot(aes(
+    x = migrant,
+    y = estimate,
+    ymin = conf.low,
+    ymax = conf.high
+  )) + 
+  geom_point(size = 3) +
+  geom_errorbar(width = .1) +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 12),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13)) + 
+  scale_x_discrete(labels = c("nonmigrant", "migrant")) +
+  scale_y_continuous(limits = c(64, 72)) +
+  labs(x = "", y = "estimated age at death") 
+
+# save graph
+# ggsave(
+#   plot = last_plot(),
+#   filename = "graphs/fe1_migrant.png",
+#   width = 5,
+#   height = 5,
+#   units = "in"
+# )
+
+fe1.plot.birth10 <- plot_predictions(fe1, by = c("birth10", "migrant"), draw = F)
+
+fe1.plot.birth10 %>% 
+  ggplot(aes(
+    x = birth10,
+    y = estimate,
+    ymin = conf.low,
+    ymax = conf.high,
+    color = migrant,
+    group = migrant
+  )) + 
+  geom_point(size = 3) +
+  geom_errorbar(width = .15) +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 12),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13)) + 
+  scale_color_manual(labels = c("nonmigrant", "migrant"),
+                     values = c("#116656", "#B4662A"),
+                     name = "") +
+  labs(x = "birth cohort", y = "estimated age at death") 
+
+# save graph
+# ggsave(
+#   plot = last_plot(),
+#   filename = "graphs/fe1_cohort.png",
+#   width = 8.5,
+#   height = 5,
+#   units = "in"
+# )
+
+```
+
+```{r alt migrant - modified samples fe1}
+omit.vars <- c("birth10", "sib_size_cat", "gender")
+
+fe1.lim <- lmer(deathage ~ migrant * birth10 + gender + sib_size_cat + (1|famid),
+         data = newdata) 
+summary(fe1.lim)
+
+newdata %>% 
+  ggplot(aes(
+    x = predict(fe1.lim),
+    y = deathage)) + 
+  geom_point() + 
+  geom_abline(
+    intercept = 0,
+    slope = 1) +
+  scale_x_continuous(limits = c(15, 110)) +
+  scale_y_continuous(limits = c(15, 110)) +
+  labs(x='Predicted Values', 
+       y='Actual Values', 
+       title='Predicted vs. Actual Values',
+       subtitle= 'migrant - model 2 - have parents')
+
+fe1.sibs <- lmer(deathage ~ migrant * birth10 + gender + sib_size_cat + (1|famid),
+         data = newerdata) 
+summary(fe1.sibs)
+
+newerdata %>% 
+  ggplot(aes(
+    x = predict(fe1.sibs),
+    y = deathage)) + 
+  geom_point() + 
+  geom_abline(
+    intercept = 0,
+    slope = 1) +
+  scale_x_continuous(limits = c(15, 110)) +
+  scale_y_continuous(limits = c(15, 110)) +
+  labs(x='Predicted Values', 
+       y='Actual Values', 
+       title='Predicted vs. Actual Values',
+       subtitle= 'migrant - model 3 - have parents + siblings')
+
+stargazer(fe1, fe1.lim, fe1.sibs,
+          type = "text",
+          column.labels = c("full", "have parents", "have siblings"),
+          dep.var.caption = "Dependent variable: Age at Death",
+          dep.var.labels = "",
+          omit = omit.vars)
+
+```
+
+## Death country
+
+```{r Family effects - death country}
+# model 2 - destination country
+fe2 <- lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|famid),
+         data = data)
+summary(fe2)
+
+# fe2.mm <- margins(lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|famid),
+#             data = data), variables = "death_country")
+# print(fe2.mm)
+```
+
+```{r death country plots}
+
+fe2.plot <- plot_predictions(fe1, by = "death_country", draw = F)
+
+fe2.plot %>% 
+  ggplot(aes(
+    x = death_country,
+    y = estimate,
+    ymin = conf.low,
+    ymax = conf.high
+  )) + 
+  geom_point(size = 3.5,
+             aes(stroke = death_country)) +
+  geom_errorbar(width = .15) +
+  theme(legend.position = "bottom",
+        legend.text = element_text(size = 12),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 13),
+        axis.title.y.left = element_text(size = 13)) +
+  scale_x_discrete(labels = c("UK/Ireland", "Canada", "South Africa",
+                              "Australia", "New Zealand", "USA")) +
+  labs(x = "country of death", y = "estimated age at death") 
+
+# save graph
+# ggsave(
+#   plot = last_plot(),
+#   filename = "graphs/fe2_countries.png",
+#   width = 8.5,
+#   height = 5,
+#   units = "in"
+# )
+
+
+
+```
+
+```{r alt migrant - modified samples fe2}
+
+fe2.lim <- lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|famid),
+         data = newdata) 
+summary(fe2.lim)
+
+plot_predictions(fe2.lim, by = "death_country") 
+
+newdata %>% 
+  ggplot(aes(
+    x = predict(fe2.lim),
+    y = deathage)) + 
+  geom_point() + 
+  geom_abline(
+    intercept = 0,
+    slope = 1) +
+  scale_x_continuous(limits = c(15, 110)) +
+  scale_y_continuous(limits = c(15, 110)) +
+  labs(x='Predicted Values', 
+       y='Actual Values', 
+       title='Predicted vs. Actual Values',
+       subtitle= 'death country - model 2 - have parents')
+
+fe2.sibs <- lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|famid),
+         data = newerdata) 
+summary(fe2.sibs)
+
+plot_predictions(fe2.sibs, by = "death_country")
+
+newerdata %>% 
+  ggplot(aes(
+    x = predict(fe2.sibs),
+    y = deathage)) + 
+  geom_point() + 
+  geom_abline(
+    intercept = 0,
+    slope = 1) +
+  scale_x_continuous(limits = c(15, 110)) +
+  scale_y_continuous(limits = c(15, 110)) +
+  labs(x='Predicted Values', 
+       y='Actual Values', 
+       title='Predicted vs. Actual Values',
+       subtitle= 'death country - model 3 - have parents + siblings')
+
+tbl <- stargazer(fe1, fe1.lim, fe1.sibs, fe2, fe2.lim, fe2.sibs,
+          type = "html",
+          column.labels = c("full", "have parents", "have siblings",
+                            "full", "have parents", "have siblings"),
+          dep.var.caption = "Dependent variable: Age at Death",
+          dep.var.labels = "")
+
+#write(tbl, file = "tables/Results_table_compsamples.html", sep = ",")
+
+```
+
+```{r stargazer tables - fam effects models}
+
+cov.labs <- c("Migrant", "Canada", "South Africa", "Australia", 
+              "New Zealand", "United States of America")
+omit.vars <- c("birth10", "sib_size_cat", "gender")
+
+tbl <- stargazer(fe1, fe2,
+                 type = "html",
+                 column.labels = c("Migrant", "Country of Death"),
+                 covariate.labels = cov.labs,
+                 dep.var.caption = "Dependent variable: Age at Death",
+                 dep.var.labels = "",
+                 keep.stat = c("n"),
+                 add.lines=list(c("Sibling random effects", "Yes", "Yes"))
+)
+
+#write(tbl, file = "tables/Results_table.html", sep = ",")
+
+```
