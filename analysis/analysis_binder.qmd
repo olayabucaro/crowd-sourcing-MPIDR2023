@@ -12,12 +12,10 @@ library(dplyr)
 library(data.table)
 library(ggplot2)
 library(lme4)
-library(stargazer)S
+library(stargazer)
 
-data <- fread("../data/moddatafinal_LASTTIMEIPROMISE.csv", drop  = c("ego",
-                                                                     "birth_country",
-                                                                     "birth_year",
-                                                                     "death_year"))
+data <- fread("../data/moddatafinal_LASTTIMEIPROMISE.csv", 
+              drop  = c("ego", "birth_country", "birth_year", "death_year"))
 
 ```
 
@@ -43,47 +41,48 @@ data <- data %>%
 
 ## Desctiptive statistics data
 
-```{r descrtiptives}
+```{r descrtiptives deathage}
 summary(data$deathage)
 ```
 
-```{r descrtiptives}
+```{r descrtiptives migrant}
 summary(data$migrant)
 ```
 
-```{r descrtiptives}
+```{r descrtiptives death_country}
 table(data$death_country)
 ```
 
-```{r descrtiptives}
+```{r descrtiptives birth10}
 summary(data$birth10)
 ```
 
-```{r descrtiptives}
+```{r descrtiptives death10}
 summary(data$death10)
 ```
 
-```{r descrtiptives}
+```{r descrtiptives gender}
 summary(data$gender)
 ```
 
-```{r descrtiptives}
+```{r descrtiptives sib_size_cat}
 summary(data$sib_size_cat)
 ```
 
-```{r descrtiptives}
+```{r descrtiptives famid}
 summary(data$famid)
 ```
 
-```{r descrtiptives}
+```{r descrtiptives firstborn}
 table(data$firstborn)
 ```
 
 ## Family effects models
 
+### Model 1 - Migrant
+
 ```{r Family effects model - migrant}
 
-# model 1 - migrant
 fe1 <- lmer(deathage ~ migrant * birth10 + gender + sib_size_cat + (1|famid),
             data = data) 
 
@@ -91,12 +90,10 @@ summary(fe1)
 
 ```
 
-
-## Death country
+### Model 2 - Death country
 
 ```{r Family effects - death country}
 
-# model 2 - destination country
 fe2 <- lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|famid),
          data = data)
 
@@ -106,30 +103,29 @@ summary(fe2)
 
 
 ```{r stargazer tables - fam effects models}
+#| echo: false
 
-cov.labs <- c("Migrant", "Canada", "South Africa", "Australia", 
-              "New Zealand", "United States of America")
+cov.labs <- c("Migrant", "Country of Death: Canada", "Country of Death: South Africa", "Country of Death: Australia", 
+              "Country of Death: New Zealand", "Country of Death: United States of America")
 omit.vars <- c("birth10", "sib_size_cat", "gender")
 
 stargazer(fe1, fe2,
                  type = "text",
-                 column.labels = c("Migrant", "Country of Death"),
+                 column.labels = c("Migrant Model", "Country of Death Model"),
                  covariate.labels = cov.labs,
                  dep.var.caption = "Dependent variable: Age at Death",
                  dep.var.labels = "",
                  keep.stat = c("n"),
                  add.lines=list(c("Sibling random effects", "Yes", "Yes"))
-)
-
+          )
 
 ```
 
-## Modified sample
+## Models with modified sample
 
-```{r newdata}
+```{r newdata par}
 
-
-# make df where everyone has a parent in the data
+# Make df where everyone has a parent in the data
 newdata <- data %>% 
   filter(miss.famid == F) %>% 
   select(-miss.famid)
@@ -168,8 +164,6 @@ fe2.lim <- lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|
          data = newdata) 
 summary(fe2.lim)
 
-plot_predictions(fe2.lim, by = "death_country") 
-
 newdata %>% 
   ggplot(aes(
     x = predict(fe2.lim),
@@ -189,7 +183,7 @@ newdata %>%
 
 ```
 
-```{r newdata}
+```{r newdata sib}
 
 # make df where only people with siblings are in data
 newerdata <- newdata %>% 
@@ -230,8 +224,6 @@ stargazer(fe1, fe1.lim, fe1.sibs,
 fe2.sibs <- lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|famid),
          data = newerdata) 
 summary(fe2.sibs)
-
-plot_predictions(fe2.sibs, by = "death_country")
 
 newerdata %>% 
   ggplot(aes(
