@@ -16,7 +16,7 @@ library(margins)
 library(data.table)
 library(ggplot2)
 
-data <- fread("../data/moddatafinal_LASTTIMEIPROMISE.csv")
+data <- fread("./data/moddatafinal_LASTTIMEIPROMISE.csv")
 
 ```
 
@@ -139,14 +139,14 @@ plot.p.sibs <- p.sibs %>%
     x = factor,
     y = AME
   )) + 
-  geom_point() +
+  ggplot2::geom_point() +
   geom_errorbar(aes(
     ymin = lower,
     ymax = upper),
     width = 0.15) + 
   xlab("Migrant") + 
   ylab("Average Marginal Effect") + 
-  ylim(c(5.5,6.5)) +
+  ylim(c(6.5,8.5)) +
   theme_bw() + 
   theme(axis.ticks.x = element_blank(),
         axis.text.x = element_blank())
@@ -259,7 +259,7 @@ cov.labs <- c("Migrant", "Canada", "South Africa", "Australia",
               "New Zealand", "United States of America")
 
 tbl <- stargazer(fe1, fe2,
-                 type = "text",
+                 type = "html",
                  column.labels = c("Migrant", "Country of Death"),
                  covariate.labels = cov.labs,
                  dep.var.caption = "Dependent variable: Age at Death",
@@ -268,6 +268,6 @@ tbl <- stargazer(fe1, fe2,
                  add.lines=list(c("Sibling random effects", "Yes", "Yes"))
 )
 
-#write(tbl, file = "./analysis_output/results_table.html", sep = ",")
+write(tbl, file = "./analysis_output/results_table.html", sep = ",")
 
 ```

@@ -1,0 +1,204 @@
+---
+title: "Analysis"
+format: gfm
+---
+
+## Analysis
+
+```{r packages & data}
+#| output: false
+
+library(dplyr)
+library(stargazer)
+library(marginaleffects)
+library(lme4)
+library(margins)
+library(data.table)
+library(ggplot2)
+
+data <- fread("./data/moddatafinal_all_death_years.csv")
+
+```
+
+## Format and summarize variables
+
+```{r}
+# different minimum survival age
+
+## Format and summarize variables
+
+
+data <- data %>% 
+  mutate(
+    migrant = factor(migrant, levels = c(0, 1),
+                     labels = c("nonmigrant", "migrant")),
+    death_country = factor(death_country, levels = c("UK/Ireland", "Canada",
+                                                     "South Africa", "Australia",
+                                                     "New Zealand",
+                                                     "United States of America")),
+    birth10 = as.factor(birth10),
+    death10 = as.factor(death10),
+    gender = as.factor(gender),
+    sib_size_cat = as.factor(sib_size_cat),
+    famid = as.numeric(famid),
+    firstborn = factor(firstborn, levels = c('missing', '0', '1'))
+  )
+
+
+
+# Make df where everyone has a parent in the data
+data_par_complete <- data %>% filter(!is.na(famid))
+
+
+# Cut ages
+
+x <- seq(0, 50, 5)
+j = 1
+
+
+results <- vector("list", length(x)*2)
+margins <- vector("list", length(x)*2)
+
+for (i in x) {
+  
+  ## Cut data
+  
+  data_par_complete_mod <- data_par_complete[deathage >= i]
+  
+  ## Family effects models
+  
+  
+  # Model 1 - migrant
+  results[[j]] <- lmer(deathage ~ migrant * birth10 + gender + sib_size_cat + (1|famid),
+              data = data_par_complete_mod) 
+  
+  margins[[j]] <- margins(results[[j]], variables = "migrant")
+  
+  j = j+1
+  
+  ## Death country
+  
+  # Model 2 - destination country
+  results[[j]] <- lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|famid),
+              data = data_par_complete_mod)
+  
+  margins[[j]] <- margins(results[[j]], variables = "death_country")
+  
+  j = j+1
+  
+}
+```
+
+```{r}
+
+# robustness check
+
+
+#migrant model
+
+mig_mar <- margins[c(1,3,5,7,9,11,13,15,17,19,21)]
+
+mig_mar_av <- list()
+
+for (k in 1:length(mig_mar)) {
+  mig_mar_av[[k]] <- summary(mig_mar[[k]])
+}
+
+# unlist and renamefactor into dataframe
+
+mig_mar_av <- do.call(rbind.data.frame, mig_mar_av)
+
+mig_mar_av <- cbind(mig_mar_av, x)
+
+plot.mig_age <- mig_mar_av %>% 
+  ggplot(aes(
+    x = x,
+    y = AME
+  )) +
+  geom_point() +
+  geom_errorbar(aes(
+    ymin = lower,
+    ymax = upper), 
+    width = 0.25) + 
+  ylim(c(2,6.5)) +
+  xlab("Death Cut-off age") + 
+  ylab("Average Marginal Effect") + 
+  theme_bw()
+
+ggsave(
+  plot = plot.mig_age,
+  filename = "./analysis_output/fe1_age_cutoff.png",
+  width = 8.5,
+  height = 5,
+  units = "in"
+)
+
+# death country model
+
+death_mar <- margins[c(2,4,6,8,10,12,14,16,18,20,22)]
+
+death_mar_av <- list()
+
+for (k in 1:length(death_mar)) {
+  death_mar_av[[k]] <- summary(death_mar[[k]])
+}
+
+# unlist and renamefactor into dataframe
+
+death_mar_av <- do.call(rbind.data.frame, death_mar_av)
+
+y <- rep(seq(0,50,5), each = 5)
+
+death_mar_av <- cbind(death_mar_av, y)
+
+death_mar_av$factor <- gsub("death_country", "", death_mar_av$factor)
+
+plot.death_age_wrap <- death_mar_av %>% 
+  ggplot(aes(
+    x = y,
+    y = AME
+  )) +
+  geom_point() +
+  geom_errorbar(aes(
+    ymin = lower,
+    ymax = upper), 
+    width = 0.25) + 
+  xlab("Death Cut-off age") + 
+  ylab("Average Marginal Effect") + 
+  theme_bw()+
+  facet_wrap(vars(factor))
+
+ggsave(
+  plot = plot.death_age_wrap,
+  filename = "./analysis_output/fe2_death_cutoff_wrap.png",
+  width = 8.5,
+  height = 5,
+  units = "in"
+)
+
+plot.death_age_grid <- death_mar_av %>% 
+  ggplot(aes(
+    x = y,
+    y = AME
+  )) +
+  geom_point() +
+  geom_errorbar(aes(
+    ymin = lower,
+    ymax = upper), 
+    width = 0.25) + 
+  xlab("Death Cut-off age") + 
+  ylab("Average Marginal Effect") + 
+  theme_bw()+
+  facet_grid(vars(factor))
+
+ggsave(
+  plot = plot.death_age_grid,
+  filename = "./analysis_output/fe2_death_cutoff_grid.png",
+  width = 8.5,
+  height = 5,
+  units = "in"
+)
+
+
+
+```
