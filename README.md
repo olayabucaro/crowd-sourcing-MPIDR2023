@@ -40,5 +40,5 @@ Raw Familinx data avalible at: [https://osf.io/fd25c/](https://osf.io/fd25c/)
 
 | File name   | Description |
 | ----------- | ----------- |
-| moddatafinal_LASTTIMEIPROMISE.csv   | Final clean dataset for analysis |
+| [analysis.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/07e939bfd3ac9f545aaebdae92ccbd866081b8fb/analysis/analysis.md)    | Analysis script |
 
