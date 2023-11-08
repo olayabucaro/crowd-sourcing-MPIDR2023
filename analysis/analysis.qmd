@@ -15,6 +15,7 @@ library(lme4)
 library(margins)
 library(data.table)
 library(ggplot2)
+library(ggpubr)
 
 data <- fread("./data/moddatafinal_LASTTIMEIPROMISE.csv")
 
@@ -107,7 +108,7 @@ plot.p <- p %>%
     width = 0.15) + 
   xlab("Migrant") + 
   ylab("Average Marginal Effect") + 
-  ylim(c(5.5,6.5)) +
+  ylim(c(1,11.5)) +
   theme_bw() + 
   theme(axis.ticks.x = element_blank(),
         axis.text.x = element_blank())
@@ -124,6 +125,42 @@ ggsave(
 
 ```
 
+```{r}
+birth.mm <- margins(fe1, variables = "birth10", data = data_par_complete[data_par_complete[["migrant"]] == "migrant",])
+birth.mm <- margins(fe1, variables = "birth10", at = list(migrant = c("nonmigrant","migrant")))
+birth.mm <- margins(fe1, variables = "migrant", at = list(birth10 = c("1730","1740", "1750", "1760", "1770", "1780", "1790", "1800", "1810", "1820", "1830", "1840", "1850", "1860", "1870", "1880", "1890")))
+pb <- summary(birth.mm) # AME = 5.93, p < 0.001
+
+plot.pb <- pb %>% 
+  ggplot(aes(
+    x = birth10,
+    y = AME
+  )) + 
+  geom_point() +
+  geom_errorbar(aes(
+    ymin = lower,
+    ymax = upper),
+    width = 0.15) + 
+  xlab("Birth Cohort") + 
+  ylab("Average Marginal Effect") + 
+  #ylim(c(1,11.5)) +
+  theme_bw() + 
+  theme(axis.text.x = element_text(angle=35)) + 
+  scale_x_discrete(labels=c("1730", "1740", "1750", "1760", "1770", "1780", "1790",
+                            "1800", "1810", "1820", "1830", "1840", "1850",
+                            "1860", "1870", "1880", "1890"))
+
+ggsave(
+  plot = plot.pb,
+  filename = "./analysis_output/fe1_birth10.png",
+  width = 8.5,
+  height = 5,
+  units = "in"
+)
+
+```
+
+
 ```{r alt migrant - modified samples fe1}
 
 fe1.sibs <- lmer(deathage ~ migrant * birth10 + gender + sib_size_cat + (1|famid),
@@ -134,27 +171,72 @@ fe1.sibs.mm <- margins(fe1.sibs, variables = "migrant")
 p.sibs <- summary(fe1.sibs.mm) # AME = 5.9335, p < 0.001
 p.sibs
 
-plot.p.sibs <- p.sibs %>% 
+plot.p.sibs <- p %>% 
   ggplot(aes(
     x = factor,
     y = AME
   )) + 
-  ggplot2::geom_point() +
-  geom_errorbar(aes(
+  geom_point(color = "grey") +
+  geom_errorbar(color = "grey", aes(
     ymin = lower,
     ymax = upper),
     width = 0.15) + 
   xlab("Migrant") + 
   ylab("Average Marginal Effect") + 
-  ylim(c(6.5,8.5)) +
+  ylim(c(1,11.5)) +
+  geom_point(data = p.sibs)+
+  geom_errorbar(data = p.sibs, aes(
+    ymin = lower,
+    ymax = upper), 
+    width = 0.15) +
   theme_bw() + 
   theme(axis.ticks.x = element_blank(),
         axis.text.x = element_blank())
+
+
 
 # save graph
 ggsave(
   plot = plot.p.sibs,
   filename = "./analysis_output/fe1_sibs.png",
+  width = 8.5,
+  height = 5,
+  units = "in"
+)
+
+```
+
+```{r}
+birth.mm.sib <- margins(fe1.sibs, variables = "migrant", at = list(birth10 = c("1730","1740", "1750", "1760", "1770", "1780", "1790", "1800", "1810", "1820", "1830", "1840", "1850", "1860", "1870", "1880", "1890")))
+pb.sib <- summary(birth.mm.sib) # AME = 5.93, p < 0.001
+
+plot.pb.sib <- pb %>% 
+  ggplot(aes(
+    x = birth10,
+    y = AME
+  )) + 
+  geom_point(color = "grey") +
+  geom_errorbar(color = "grey", aes(
+    ymin = lower,
+    ymax = upper),
+    width = 0.15) + 
+  xlab("Birth Cohort") + 
+  ylab("Average Marginal Effect") + 
+  #ylim(c(1,11.5)) +
+  theme_bw() + 
+  geom_point(data = pb.sib)+
+  geom_errorbar(data = pb.sib, aes(
+    ymin = lower,
+    ymax = upper), 
+    width = 0.15) +
+  theme(axis.text.x = element_text(angle=35)) + 
+  scale_x_discrete(labels=c("1730", "1740", "1750", "1760", "1770", "1780", "1790",
+                            "1800", "1810", "1820", "1830", "1840", "1850",
+                            "1860", "1870", "1880", "1890"))
+
+ggsave(
+  plot = plot.pb.sib,
+  filename = "./analysis_output/fe1_birth10.sib.png",
   width = 8.5,
   height = 5,
   units = "in"
@@ -191,11 +273,12 @@ plot.q <- q %>%
   geom_errorbar(aes(
     ymin = lower,
     ymax = upper), 
-    width = 0.25) + 
+    width = 0.15) + 
   ylim(c(1,11.5)) +
   xlab("Destination Country") + 
-  ylab("Average Marginal Effect") + 
+  ylab("") + 
   theme_bw()
+
 
 # save graph
 ggsave(
@@ -227,20 +310,26 @@ q.sibs <- q.sibs %>%
          factor = ifelse(factor == "death_countryNew Zealand", "New Zealand", factor),
          factor = ifelse(factor == "death_countryUnited States of America", "USA", factor)) 
 
-plot.q.sibs <- q.sibs %>% 
+plot.q.sibs <- q %>% 
   ggplot(aes(
     x = factor,
     y = AME
   )) +
-  geom_point() +
-  geom_errorbar(aes(
+  geom_point(color = "grey") +
+  geom_errorbar(color = "grey", aes(
     ymin = lower,
     ymax = upper), 
-    width = 0.25) + 
+    width = 0.15) + 
   ylim(c(1,11.5)) +
   xlab("Destination Country") + 
-  ylab("Average Marginal Effect") + 
-  theme_bw()
+  ylab("") + 
+  theme_bw()+
+  geom_point(data = q.sibs)+
+  geom_errorbar(data = q.sibs, aes(
+    ymin = lower,
+    ymax = upper), 
+    width = 0.15) 
+ 
 
 # save graph
 ggsave(
@@ -250,6 +339,34 @@ ggsave(
   height = 5,
   units = "in"
 )
+
+```
+
+```{r}
+
+plot.pq <- ggarrange(plot.p, plot.q, labels = c("A1", "B1"), label.x = 0.5, widths = c(1, 2))
+
+
+ggsave(
+  plot = plot.pq,
+  filename = "./analysis_output/fe_arr.png",
+  width = 8.5,
+  height = 5,
+  units = "in"
+)
+
+
+plot.pq.sibs <- ggarrange(plot.p.sibs, plot.q.sibs, labels = c("A2", "B2"), label.x = 0.5, widths = c(1, 2))
+
+
+ggsave(
+  plot = plot.pq.sibs,
+  filename = "./analysis_output/fe_sib_arr.png",
+  width = 8.5,
+  height = 5,
+  units = "in"
+)
+
 
 ```
 

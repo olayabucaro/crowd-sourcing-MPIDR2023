@@ -1,5 +1,5 @@
 ---
-title: "Analysis"
+title: "Checks"
 format: gfm
 ---
 
@@ -119,7 +119,7 @@ plot.mig_age <- mig_mar_av %>%
   geom_errorbar(aes(
     ymin = lower,
     ymax = upper), 
-    width = 0.25) + 
+    width = 0.15) + 
   ylim(c(2,6.5)) +
   xlab("Death Cut-off age") + 
   ylab("Average Marginal Effect") + 
@@ -162,7 +162,7 @@ plot.death_age_wrap <- death_mar_av %>%
   geom_errorbar(aes(
     ymin = lower,
     ymax = upper), 
-    width = 0.25) + 
+    width = 1) + 
   xlab("Death Cut-off age") + 
   ylab("Average Marginal Effect") + 
   theme_bw()+
@@ -185,7 +185,7 @@ plot.death_age_grid <- death_mar_av %>%
   geom_errorbar(aes(
     ymin = lower,
     ymax = upper), 
-    width = 0.25) + 
+    width = 0.15) + 
   xlab("Death Cut-off age") + 
   ylab("Average Marginal Effect") + 
   theme_bw()+
