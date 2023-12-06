@@ -2,9 +2,9 @@
 title: "Data UK-IE Birth Extraction"
 format: gfm
 params:
-  path_data: "N:\\Incubator2023_crowd\\moddata\\moddata2.csv"
-  path_links: "N:\\Incubator2023_crowd\\ogdata\\relations-anon.txt"
-  save_path: "N:\\Incubator2023_crowd\\moddata\\"
+  path_data: "./data/moddata2.csv"
+  path_links: "./data/relations-anon.txt"
+  save_path: "./data/uk_ireland.csv"
 ---
 
 ## Extract indivuals born in UK or Ireland
@@ -19,23 +19,28 @@ library(dplyr)
 
 data <- fread(params$path_data, na.strings='', encoding="UTF-8")
 ties <- fread(params$path_links)
+
 ```
 
 Update: took out the year restriction: just want to see what it looks like as a whole
 
 ```{r}
+
 subsetData <- data %>% 
   filter(
     !is.na(birth_location_country), !is.na(death_location_country),
     !is.na(death_year), !is.na(birth_year)
     ) 
+
 ```
 
 Drop birth/death columns to lowercase
 
 ```{r}
+
 subsetData$birth_location_country<- tolower(subsetData$birth_location_country)
 subsetData$death_location_country <- tolower(subsetData$death_location_country)
+
 ```
 
 ### 1: Filter for the UK in the birth countries
@@ -101,7 +106,8 @@ non_ukEntries <- subsetData %>%
                                        TRUE ~ death_location_country)
     ) %>% 
   mutate(death_location_country = case_when(grepl("^(?!new)england|(united kingdom)|\\b(uk)\\b|(u\\.k)",
-                                                  subsetData$death_location_country, perl = TRUE) ~ "United Kingdom",
+                                                  subsetData$death_location_country,
+                                                  perl = TRUE) ~ "United Kingdom",
                                             TRUE ~ death_location_country)
     ) %>% 
   filter(birth_location_country != "United Kingdom") %>%
@@ -126,7 +132,8 @@ ukEntries <- rbind(ukEntries, ukEntries2)
 
 ```{r}
 
-ieEntries <- non_ukEntries[grepl("(ireland)|(éire)|(eire)|\\b(ie)\\b", non_ukEntries$birth_location_country)]
+ieEntries <- non_ukEntries[grepl("(ireland)|(éire)|(eire)|\\b(ie)\\b",
+                                 non_ukEntries$birth_location_country)]
 
 ieEntries <- ieEntries %>% 
   mutate(
@@ -346,6 +353,6 @@ ct <- data.table(table(cleanUKIreland$birth_location_country, cleanUKIreland$dea
 
 ```{r}
 
-fwrite(cleanUKIreland, paste0(params$save_path, "uk_ireland.csv"))
+fwrite(cleanUKIreland, params$save_path)
 
 ```

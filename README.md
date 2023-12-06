@@ -1,6 +1,6 @@
-# crowd-sourcing-MPIDR2023
+# Leaving for Life: Using Online Crowd-Sourced Genealogies to Estimate the Migrant Mortality Advantage for the United Kingdom and Ireland During the 18th and 19th Centuries
 
-Repository for the atricle Leaving for Life:
+Repository for the article Leaving for Life:
 
 All the code is available in a stable environment in the Binder running R version 4.3.1 and R packages from the Posit Public Package Manager CRAN snapshot [2023-07-31](https://packagemanager.posit.co/cran/2023-07-31/src/contrib/PACKAGES) 
 
@@ -49,4 +49,5 @@ Raw Familinx data avalible at: [https://osf.io/fd25c/](https://osf.io/fd25c/)
 | File name   | Description |
 | ----------- | ----------- |
 | [analysis.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/07e939bfd3ac9f545aaebdae92ccbd866081b8fb/analysis/analysis.md)    | Analysis script |
+| [online_supplement.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/07e939bfd3ac9f545aaebdae92ccbd866081b8fb/analysis/analysis.md)    | Online supplement analysis script |
 

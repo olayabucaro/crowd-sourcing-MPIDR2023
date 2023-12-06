@@ -2,9 +2,9 @@
 title: "Data Imputation"
 format: gfm
 params:
-  path_data: "N:\\Incubator2023_crowd\\moddata\\moddata1.csv"
-  path_links: "N:\\Incubator2023_crowd\\ogdata\\relations-anon.txt"
-  save_path: "N:\\Incubator2023_crowd\\moddata\\"
+  path_data: "./data/moddata1.csv"
+  path_links: "./data/relations-anon.txt"
+  save_path: "./data/moddata2.csv"
 ---
 
 ## Imputation of variables
@@ -46,6 +46,7 @@ dataReduced <- data %>%
 First: Remove "abnormal" birth years - Some of these were probably BCE years (were negative) but others were probably recording/scanning errors since they are very far in the future
 
 ```{r}
+
 abnormalYears <- dataReduced %>% 
   filter(
     (birth_year <= 0| death_year <= 0) | (is.na(birth_year) & (baptism_year <=0 | baptism_year > 2020))| 
@@ -53,11 +54,13 @@ abnormalYears <- dataReduced %>%
   )
 
 dataReduced2 <- dataReduced %>% anti_join(abnormalYears, by=c('profileid'))
+
 ```
 
 Next: Impute birth/death dates from baptism/burial years respectively
 
 ```{r}
+
 dataReduced2 <- dataReduced2 %>% 
   mutate(birth_year = ifelse(is.na(birth_year), baptism_year, birth_year)) %>% 
   mutate(death_year = ifelse(is.na(death_year), burial_year, death_year))
@@ -69,6 +72,7 @@ dataReduced2 <- dataReduced2 %>%
 First: Impute country of birth/death from the "coordinates column determined from lat/long
 
 ```{r}
+
 coordImpute <- dataReduced2 %>% 
   mutate(
     birth_location_country = ifelse(is.na(birth_location_country),
@@ -77,11 +81,13 @@ coordImpute <- dataReduced2 %>%
   mutate(death_location_country = ifelse(is.na(death_location_country),
                                        death_coord_country, death_location_country)
     )
+
 ```
 
 Next: Impute country code information for countries that are still missing
 
 ```{r}
+
 countCodeImpute <- coordImpute %>% 
   mutate(
     birth_location_country = ifelse(is.na(birth_location_country), 
@@ -93,11 +99,13 @@ countCodeImpute <- coordImpute %>%
                                        death_location_country_code,
                                        death_location_country)
     )
+
 ```
 
 Next: Impute with baptism/burial location (people are baptized/buried in the same place they're born/died)
 
 ```{r}
+
 baptismBurialImpute <- countCodeImpute %>% 
   mutate(
     birth_location_country=ifelse(is.na(birth_location_country), 
@@ -109,11 +117,13 @@ baptismBurialImpute <- countCodeImpute %>%
                                        burial_location_country, 
                                        death_location_country)
     )
+
 ```
 
 Finally: Impute with baptism/burial country codes
 
 ```{r}
+
 baptismBurialCCImpute <- baptismBurialImpute %>% 
   mutate(
     birth_location_country=ifelse(is.na(birth_location_country), 
@@ -125,6 +135,7 @@ baptismBurialCCImpute <- baptismBurialImpute %>%
                                   burial_location_country_code,
                                   death_location_country)
     )
+
 ```
 
 Drop some columns
@@ -195,6 +206,7 @@ data <- data %>%
                                                    custom_dict = cd), 
                                        death_location_country)
     )
+
 ```
 
 ## 4: Imputing from the free text column
@@ -221,11 +233,13 @@ freeTextDeath <- freeTextDeath %>%
     death_location_country=countrycode(death_location_place_name, "state.regex",
                                        "state.name", custom_dict = cd)
     )
+
 ```
 
 Finally: merge all state information back into the main table and replace state names with "USA"
 
 ```{r}
+
 # merge state data back into full dataframe 
 data <- rows_patch(data, freeTextBirth, by='profileid')
 data <- rows_patch(data, freeTextDeath, by="profileid")
@@ -243,6 +257,7 @@ data <- data %>%
                                        usStates ~ "United States of America",
                                        TRUE ~ death_location_country)
     )
+
 ```
 
 ## 5: Countries from the free text column
@@ -250,9 +265,11 @@ data <- data %>%
 First: Isolate entries that still have no country information
 
 ```{r}
+
 freeTextBirthCountry <- data %>% filter(!is.na(birth_location_place_name) & is.na(birth_location_country))
 freeTextDeathCountry <- data %>% filter(!is.na(death_location_place_name) & is.na(death_location_country))
 ```
+
 
 Detect country names in birth/death free text columns and replace country columns with detected country names
 
@@ -274,11 +291,13 @@ freeTextDeathCountry <- freeTextDeathCountry %>%
 #join back into the main table
 data <- rows_patch(data, freeTextBirthCountry, by='profileid')
 data <- rows_patch(data, freeTextDeathCountry, by="profileid")
+
 ```
 
 Repeat with baptism/burial locations
 
 ```{r}
+
 freeTextBaptismCountry <- data %>% 
   filter(
     !is.na(data$baptism_location_place_name) & is.na(data$birth_location_country)
@@ -300,20 +319,25 @@ freeTextBurialCountry <- data %>%
 data <- data %>% 
   rows_patch(freeTextBaptismCountry, by='profileid') %>% 
   rows_patch(freeTextBurialCountry, by="profileid")
+
 ```
 
 Drop extra columns
 
 ```{r}
+
 data <- data %>% 
   select(
     -ends_with("longitude"),-ends_with("latitude"), -ends_with("name"),
     -ends_with("state"), -starts_with("current"), -ends_with("city")
     )
+
 ```
 
 ## Write to csv
 
 ```{r}
-fwrite(data, paste0(params$save_path, "moddata2.csv"))
+
+fwrite(data, params$save_path)
+
 ```

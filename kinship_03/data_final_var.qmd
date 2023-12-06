@@ -2,12 +2,12 @@
 title: "Create Final Dataset for Analysis"
 format: gfm
 params:
-  path_data: "N:\\Incubator2023_crowd\\moddata\\uk_ireland.csv"
-  path_links: "N:\\Incubator2023_crowd\\ogdata\\relations-anon.txt"
-  save_path: "N:\\Incubator2023_crowd\\moddata\\"
-  sib.num: "N:\\Incubator2023_crowd\\moddata\\number_siblings.csv"
-  sib.or: "N:\\Incubator2023_crowd\\moddata\\birth_order.csv"
-  mp.df: "N:\\Incubator2023_crowd\\moddata\\ggparents.csv"
+  path_data: "./data/uk_ireland.csv"
+  path_links: "./data/relations-anon.txt"
+  save_path: "./data/data.csv"
+  sib.num: "./data/number_siblings.csv"
+  sib.or: "./data/birth_order.csv"
+  mp.df: "./data/ggparents.csv"
 ---
 
 
@@ -19,7 +19,7 @@ library(dplyr)
 
 # import parent ID + gender data
 cleanUKIreland <- fread(file = params$path_data, na.strings='', encoding="UTF-8")
-nrow(cleanUKIreland)
+
 ```
 
 ## Plan of attack: 
@@ -71,8 +71,6 @@ finalvar <- cleanUKIreland %>%
                       0, migrant))
 rm(cleanUKIreland)
 
-nrow(finalvar)
-
 ```
 
 ## STEP 2 - NUMBER OF SIBLINGS
@@ -82,7 +80,6 @@ nrow(finalvar)
 sib.num <- fread(params$sib.num)
 
 finalvar <- finalvar %>% left_join(sib.num, by = "ego")
-nrow(finalvar)
 rm(sib.num)
 
 ```
@@ -105,16 +102,7 @@ finalvar <- finalvar %>%
     firstmale = if_else((firstborn == 1 & gender == "male"), 1, 0),
     firstmale = if_else(is.na(firstborn), NA, firstmale)
     )
-nrow(finalvar)
 rm(sib.order)
-
-# check nonmissing
-# sum(!is.na(finalvar$firstborn))
-# sum(!is.na(finalvar$firstmale))
-# 
-# # check Ns --> looks good
-# table(finalvar$firstmale == 1) # 11,363
-# table(finalvar$firstborn == 1) # 18,298
 
 ```
 
@@ -125,17 +113,10 @@ rm(sib.order)
 mp.df <- fread(params$mp.df)
 mp.df <- mp.df %>% rename(ego = ch.id) %>% select(ego, mom, pop)
 
-#sum(is.na(mp.df$mom)) # so, use momid
-# 654
-#sum(is.na(mp.df$pop))
-# 4982
-
 finalvars <- finalvar %>% left_join(mp.df, by = "ego") %>% 
   rename(famid = mom) %>% 
   mutate(famid = ifelse(is.na(famid), pop, famid)) %>% 
   select(-pop)
-
-#sum(is.na(finalvars$famid))
 
 rm(mp.df, finalvar)
 
@@ -179,15 +160,12 @@ final.fixed1 <- final.fixed1 %>%
   select(-birth5, -death5, -firstmale)
 rm(final.fixed)
 
-#levels(finalvars$death_country)
-nrow(finalvars)
 fvs.nona <- finalvars %>% filter(!is.na(famid))
-#sum(is.na(fvs.nona$famid))
-nrow(fvs.nona)
+
 # Filter years - NOTE: still some NAs due to egos being only parent and not child
 finalvars <- final.fixed1 %>% filter(birth_year > 1734 & birth_year < 1896)
-nrow(finalvars)
+
 # Write final data to CSV
-fwrite(finalvars, paste0(params$save_path, "moddatafinal_all_death_years.csv"))
+fwrite(finalvars, params$save_path)
 
 ```

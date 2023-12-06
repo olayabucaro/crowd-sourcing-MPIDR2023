@@ -69,7 +69,6 @@ rm(cleanUKIreland)
 sib.num <- fread(params$sib.num)
 
 finalvar <- finalvar %>% left_join(sib.num, by = "ego")
-
 rm(sib.num)
 ```
 
@@ -90,16 +89,7 @@ finalvar <- finalvar %>%
     firstmale = if_else((firstborn == 1 & gender == "male"), 1, 0),
     firstmale = if_else(is.na(firstborn), NA, firstmale)
     )
-
 rm(sib.order)
-
-# check nonmissing
-# sum(!is.na(finalvar$firstborn))
-# sum(!is.na(finalvar$firstmale))
-# 
-# # check Ns --> looks good
-# table(finalvar$firstmale == 1) # 11,363
-# table(finalvar$firstborn == 1) # 18,298
 ```
 
 ## STEP 4 - FAMILY ID
@@ -108,40 +98,58 @@ rm(sib.order)
 mp.df <- fread(params$mp.df)
 mp.df <- mp.df %>% rename(ego = ch.id) %>% select(ego, mom, pop)
 
-#sum(is.na(mp.df$mom)) # so, use momid
-# 654
-#sum(is.na(mp.df$pop))
-# 4982
-
 finalvars <- finalvar %>% left_join(mp.df, by = "ego") %>% 
   rename(famid = mom) %>% 
   mutate(famid = ifelse(is.na(famid), pop, famid)) %>% 
   select(-pop)
-
-#sum(is.na(finalvars$famid))
 
 rm(mp.df, finalvar)
 
 sourceCountries <- c("Ireland", "United Kingdom")
 
 finalvars <- finalvars %>% 
-  filter(gender != "", deathage >= 15) %>% 
-  mutate(
-    birth_country = case_when(birth_country %in% sourceCountries ~ "UK/Ireland",
-                              T ~ birth_country),
-    death_country = case_when(death_country %in% sourceCountries ~ "UK/Ireland",
-                              T ~ death_country),
-    death_country = factor(death_country, levels = c("UK/Ireland", "Canada",
-                                                     "South Africa", "Australia",
-                                                     "New Zealand", "United States of America")))
-#levels(finalvars$death_country)
+  filter(gender != "",
+         deathage >= 15 & deathage <= 110) %>% 
+  mutate(birth_country = case_when(birth_country %in% sourceCountries ~ "UK/Ireland",
+                                   T ~ birth_country),
+         death_country = case_when(death_country %in% sourceCountries ~ "UK/Ireland",
+                                   T ~ death_country),
+         death_country = factor(death_country, 
+                                levels = c("UK/Ireland", "Canada", "South Africa",
+                                           "Australia", "New Zealand",
+                                           "United States of America"))) 
+
+# recode sib count and birth order variables
+# missing different than 0 recorded siblings
+final.fixed <- finalvars %>% 
+  mutate(sib.ct = if_else(is.na(famid), -1, sib.ct)) %>% 
+  mutate(sib_size_cat = case_when(sib.ct == 0 ~ '0',
+                                  sib.ct == 1 ~ '1',
+                                  sib.ct == 2 ~ '2',
+                                  sib.ct >= 3 & sib.ct <= 5 ~ '3-5',
+                                  sib.ct >= 6 ~ '6+',
+                                  TRUE ~ 'missing')) %>% 
+  mutate(sib_size_cat = factor(sib_size_cat,
+                               levels = c('missing', '0', '1', '2', '3-5', '6+')))
+
+final.fixed1 <- final.fixed %>% 
+  mutate(birth_order = if_else(sib.ct == -1, -1, birth_order),
+         firstborn = case_when(birth_order >= 0 & birth_order <= 1 ~ '1',
+                               birth_order >= 2 ~ '0',
+                               TRUE ~ 'missing'),
+         firstborn = factor(firstborn,
+                            levels = c('missing', '0', '1')))
+
+
+final.fixed1 <- final.fixed1 %>% 
+  select(-birth5, -death5, -firstmale)
+rm(final.fixed)
 
 fvs.nona <- finalvars %>% filter(!is.na(famid))
-#sum(is.na(fvs.nona$famid))
 
 # Filter years - NOTE: still some NAs due to egos being only parent and not child
-finalvars <- finalvars %>% filter(birth_year > 1734 & birth_year < 1896)
+finalvars <- final.fixed1 %>% filter(birth_year > 1734 & birth_year < 1896)
 
 # Write final data to CSV
-fwrite(finalvars, paste0(params$save_path, "moddatafinal_LASTTIMEIPROMISE.csv"))
+fwrite(finalvars, params$save_path)
 ```

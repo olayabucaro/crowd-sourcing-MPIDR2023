@@ -33,11 +33,6 @@ profs <- profiles %>% # cut sample size
 # Link parent and child ad parent number
 joined <- links[profs, on = "child"][, pn := as.integer(row.names(.SD)), by = child]
 joined[, pn := as.factor(pn)]
-
-# tab pn
-#table(joined$pn) 
-# 1      2 
-# 250420 148942 
 ```
 
 ``` r
@@ -77,13 +72,6 @@ p2.1 <- p2 %>%
                     & !is.na(p2.id),
                     "male", p2.gen) # fill in male if partner is female
     ) 
-
-# are all couples heterosexual?
-# assertthat::validate_that(all(p2.1$p1.gen != p2.1$p2.gen), msg = F) # not true, there are same-gender couples
-# homo <- p2.1 %>%
-#   mutate(homo = p1.gen == p2.gen) %>%
-#   filter(homo == T) # N = 51
-# rm(homo)
 
 # just to speed things up, drop observations with missing gender for child & both parents
 p2.2 <- p2.1 %>%
@@ -129,12 +117,8 @@ p1g <- p1g %>%
   select(-ch.gen.y) %>%
   rename(ch.gen = ch.gen.x)
 
-#sum(is.na(p1g$ch.gen)) # N = 0
-
 parents <- merge(p1g, par2g, by = 'ch.id', all.x = T) %>% 
   arrange(ch.gen.x)
-
-#sum(is.na(parents$ch.gen.x)) # N = 0 -- matches above, correct
 
 parents <- parents %>%
   mutate(
@@ -142,8 +126,6 @@ parents <- parents %>%
     ) %>%
   select(-ch.gen.y) %>%
   rename(ch.gen = ch.gen.x)
-
-#sum(is.na(parents$ch.gen)) # N = 0 -- it fills in 0 LOL
 
 "%ni%" <- Negate("%in%") # define function
 ```
@@ -320,9 +302,6 @@ sib.num <- sib.long %>%
   select(-sibling) %>%
   ungroup() %>%
   distinct(.keep_all = T)
-
-#is.data.frame(sib.num)
-#is.list(sib.num) # both a df & list, how annoying
 
 sib.num$ego1 <- as.integer(sib.num$ego)
 sib.num$sib.ct1 <- as.integer(sib.num$sib.ct)

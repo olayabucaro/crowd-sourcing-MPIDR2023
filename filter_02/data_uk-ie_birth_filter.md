@@ -92,7 +92,8 @@ non_ukEntries <- subsetData %>%
                                        TRUE ~ death_location_country)
     ) %>% 
   mutate(death_location_country = case_when(grepl("^(?!new)england|(united kingdom)|\\b(uk)\\b|(u\\.k)",
-                                                  subsetData$death_location_country, perl = TRUE) ~ "United Kingdom",
+                                                  subsetData$death_location_country,
+                                                  perl = TRUE) ~ "United Kingdom",
                                             TRUE ~ death_location_country)
     ) %>% 
   filter(birth_location_country != "United Kingdom") %>%
@@ -115,7 +116,8 @@ ukEntries <- rbind(ukEntries, ukEntries2)
 ### 1.1: Filter for Ireland in the birth countries
 
 ``` r
-ieEntries <- non_ukEntries[grepl("(ireland)|(éire)|(eire)|\\b(ie)\\b", non_ukEntries$birth_location_country)]
+ieEntries <- non_ukEntries[grepl("(ireland)|(éire)|(eire)|\\b(ie)\\b",
+                                 non_ukEntries$birth_location_country)]
 
 ieEntries <- ieEntries %>% 
   mutate(
@@ -319,5 +321,5 @@ ct <- data.table(table(cleanUKIreland$birth_location_country, cleanUKIreland$dea
 ### Write data to CSV
 
 ``` r
-fwrite(cleanUKIreland, paste0(params$save_path, "uk_ireland.csv"))
+fwrite(cleanUKIreland, params$save_path)
 ```

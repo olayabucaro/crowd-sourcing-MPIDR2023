@@ -28,9 +28,7 @@ Percentage of missing values for all columns in raw data
 
 ``` r
 na_frac <-sapply(data, function(y) sum(length(which(is.na(y))))/nrow(data)*100)
-
 na_frac <- data.frame(na_frac)
-
 na_frac
 ```
 
@@ -116,7 +114,23 @@ na_frac
 Columns with no relevant information is removed from the data
 
 ``` r
-data[, c("current_residence_location_resolved_externally","current_residence_resolved_extern_confidence", "current_residence_resolved_extern_type", "birth_date_circa", "birth_location_resolved_externally", "birth_location_resolved_extern_confidence", "birth_location_resolved_extern_type", "death_date_circa", "death_location_resolved_externally", "death_location_resolved_extern_confidence", "death_location_resolved_extern_type", "burial_date_circa", "burial_location_resolved_externally", "burial_location_resolved_extern_confidence", "burial_location_resolved_extern_type", "baptism_date_circa", "baptism_location_resolved_externally", "baptism_location_resolved_extern_confidence",  "baptism_location_resolved_extern_type"):=NULL] 
+del_cols <- c("current_residence_location_resolved_externally",
+              "current_residence_resolved_extern_confidence", 
+              "current_residence_resolved_extern_type", "birth_date_circa",
+              "birth_location_resolved_externally", 
+              "birth_location_resolved_extern_confidence", 
+              "birth_location_resolved_extern_type", "death_date_circa", 
+              "death_location_resolved_externally", 
+              "death_location_resolved_extern_confidence", 
+              "death_location_resolved_extern_type", "burial_date_circa", 
+              "burial_location_resolved_externally", 
+              "burial_location_resolved_extern_confidence", 
+              "burial_location_resolved_extern_type", "baptism_date_circa", 
+              "baptism_location_resolved_externally", 
+              "baptism_location_resolved_extern_confidence", 
+              "baptism_location_resolved_extern_type")
+
+data[, (del_cols) := NULL] 
 ```
 
 ## Function to only keep profiles with relations
@@ -274,5 +288,5 @@ data_recoded$baptism_coord = sub(":.*", "", data_recoded$baptism_coord_country)
 Cleaned data with coordinate matching
 
 ``` r
-fwrite(data_recoded, paste0(params$save_path, "moddata1.csv"))
+fwrite(data_recoded, params$save_path)
 ```

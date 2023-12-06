@@ -194,9 +194,11 @@ Extract entries with free text information but no birth/death location
 to reduce amount of code to run Regex–match with state names
 
 ``` r
-freeTextBirth <- data %>% filter(!is.na(birth_location_place_name) & is.na(birth_location_country))
+freeTextBirth <- data %>%
+  filter(!is.na(birth_location_place_name) & is.na(birth_location_country))
 
-freeTextDeath <- data %>% filter(!is.na(death_location_place_name) & is.na(death_location_country))
+freeTextDeath <- data %>%
+  filter(!is.na(death_location_place_name) & is.na(death_location_country))
 
 freeTextBirth <- freeTextBirth %>% 
   mutate(
@@ -303,8 +305,9 @@ freeTextBurialCountry <- data %>%
     i Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.
 
 ``` r
-data <- data %>% rows_patch(freeTextBaptismCountry, by='profileid') %>% 
-                 rows_patch(freeTextBurialCountry, by="profileid")
+data <- data %>% 
+  rows_patch(freeTextBaptismCountry, by='profileid') %>% 
+  rows_patch(freeTextBurialCountry, by="profileid")
 ```
 
 Drop extra columns
@@ -313,11 +316,12 @@ Drop extra columns
 data <- data %>% 
   select(
     -ends_with("longitude"),-ends_with("latitude"), -ends_with("name"),
-    -ends_with("state"), -starts_with("current"), -ends_with("city"))
+    -ends_with("state"), -starts_with("current"), -ends_with("city")
+    )
 ```
 
 ## Write to csv
 
 ``` r
-fwrite(data, paste0(params$save_path, "moddata2.csv"))
+fwrite(data, params$save_path)
 ```
