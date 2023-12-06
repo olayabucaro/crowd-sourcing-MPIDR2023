@@ -20,7 +20,7 @@ Raw Familinx data avalible at: [https://osf.io/fd25c/](https://osf.io/fd25c/)
 
 | File name   | Description |
 | ----------- | ----------- |
-| moddatafinal_LASTTIMEIPROMISE.csv   | Final clean dataset for analysis |
+| data.csv   | Final clean dataset for analysis |
 
 ### cleaning_01
 
