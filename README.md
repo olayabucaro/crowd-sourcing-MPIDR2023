@@ -49,5 +49,5 @@ Raw Familinx data avalible at: [https://osf.io/fd25c/](https://osf.io/fd25c/)
 | File name   | Description |
 | ----------- | ----------- |
 | [analysis.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/07e939bfd3ac9f545aaebdae92ccbd866081b8fb/analysis/analysis.md)    | Analysis script |
-| [online_supplement.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/07e939bfd3ac9f545aaebdae92ccbd866081b8fb/analysis/analysis.md)    | Online supplement analysis script |
+| [online_supplement.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/abfe306e41f9ec9d9173660f6f8671e4e3ea164a/analysis/online_supplement.md)    | Online supplement analysis script |
 
