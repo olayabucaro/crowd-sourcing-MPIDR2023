@@ -11,7 +11,7 @@ Depends:
     countrycode,
     data.table,
     dplyr,
-    mapdata,
+    maps,
     rmarkdown,
     tidyr,
     stargazer,
