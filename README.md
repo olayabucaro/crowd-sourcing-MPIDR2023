@@ -9,7 +9,7 @@ Due to processing power limitations in Binder not all computations can be execut
 Press the Binder badge to launch the Binder Rstudio environment:
 
 <!-- badges: start -->
-[![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/olayabucaro/crowd-sourcing-MPIDR2023/main?urlpath=rstudio)
+[![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/olayabucaro/leaving4life/main?urlpath=rstudio)
 <!-- badges: end -->
 
 ## Code and data for Leaving for Life 
@@ -26,28 +26,28 @@ Raw Familinx data avalible at: [https://osf.io/fd25c/](https://osf.io/fd25c/)
 
 | File name   | Description |
 | ----------- | ----------- |
-| [data_preparation.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/1bdd62fd995957aaf0fd4544f98429b3dd2e8eab/cleaning_01/data_preparation.md)  | Cleaned raw data and coordinate match |
-| [data_imputation.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/1bdd62fd995957aaf0fd4544f98429b3dd2e8eab/cleaning_01/data_imputation.md)   | Impute location information from other columns |
+| [data_preparation-1.qmd](https://github.com/olayabucaro/leaving4life/blob/e96f57be6c62146be93b9d5c0c55af59ebb5e31f/cleaning_01/data_preparation-1.md)  | Cleaned raw data and coordinate match |
+| [data_imputation-2.qmd](https://github.com/olayabucaro/leaving4life/blob/e96f57be6c62146be93b9d5c0c55af59ebb5e31f/cleaning_01/data_imputation-2.md)   | Impute location information from other columns |
 
 
 ### filter_02
 
 | File name   | Description |
 | ----------- | ----------- |
-| [data_uk-ie_birth_filter.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/1bdd62fd995957aaf0fd4544f98429b3dd2e8eab/filter_02/data_uk-ie_birth_filter.md)  | Filter data to only include UK/IE births |
+| [data_uk-ie_birth_filter-1.qmd](hhttps://github.com/olayabucaro/leaving4life/blob/e96f57be6c62146be93b9d5c0c55af59ebb5e31f/filter_02/data_uk-ie_birth_filter-1.md)  | Filter data to only include UK/IE births |
 
 
 ### kinship_03
 
 | File name   | Description |
 | ----------- | ----------- |
-| [data_add_kinship.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/1bdd62fd995957aaf0fd4544f98429b3dd2e8eab/kinship_03/data_add_kinship.md)  | Add kinship information to datas | 
-| [data_final_var.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/1bdd62fd995957aaf0fd4544f98429b3dd2e8eab/kinship_03/data_final_var.md)  | Create final dataset for analysis | 
+| [data_add_kinship-1.qmd](https://github.com/olayabucaro/leaving4life/blob/e96f57be6c62146be93b9d5c0c55af59ebb5e31f/kinship_03/data_add_kinship-1.md)  | Add kinship information to datas | 
+| [data_final_var-2.qmd](hhttps://github.com/olayabucaro/leaving4life/blob/e96f57be6c62146be93b9d5c0c55af59ebb5e31f/kinship_03/data_final_var-2.md)  | Create final dataset for analysis | 
 
 ## Analysis
 
 | File name   | Description |
 | ----------- | ----------- |
-| [analysis.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/07e939bfd3ac9f545aaebdae92ccbd866081b8fb/analysis/analysis.md)    | Analysis script |
-| [online_supplement.qmd](https://github.com/olayabucaro/crowd-sourcing-MPIDR2023/blob/abfe306e41f9ec9d9173660f6f8671e4e3ea164a/analysis/online_supplement.md)    | Online supplement analysis script |
+| [analysis.qmd](https://github.com/olayabucaro/leaving4life/blob/e96f57be6c62146be93b9d5c0c55af59ebb5e31f/analysis/analysis.md)    | Analysis script |
+| [online_supplement.qmd](https://github.com/olayabucaro/leaving4life/blob/e96f57be6c62146be93b9d5c0c55af59ebb5e31f/analysis/online_supplement.md)    | Online supplement analysis script |
 
