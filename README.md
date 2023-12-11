@@ -34,7 +34,7 @@ Raw Familinx data avalible at: [https://osf.io/fd25c/](https://osf.io/fd25c/)
 
 | File name   | Description |
 | ----------- | ----------- |
-| [data_uk-ie_birth_filter-1.qmd](hhttps://github.com/olayabucaro/leaving4life/blob/e96f57be6c62146be93b9d5c0c55af59ebb5e31f/filter_02/data_uk-ie_birth_filter-1.md)  | Filter data to only include UK/IE births |
+| [data_uk-ie_birth_filter-1.qmd](https://github.com/olayabucaro/leaving4life/blob/e96f57be6c62146be93b9d5c0c55af59ebb5e31f/filter_02/data_uk-ie_birth_filter-1.md)  | Filter data to only include UK/IE births |
 
 
 ### kinship_03
@@ -42,7 +42,7 @@ Raw Familinx data avalible at: [https://osf.io/fd25c/](https://osf.io/fd25c/)
 | File name   | Description |
 | ----------- | ----------- |
 | [data_add_kinship-1.qmd](https://github.com/olayabucaro/leaving4life/blob/e96f57be6c62146be93b9d5c0c55af59ebb5e31f/kinship_03/data_add_kinship-1.md)  | Add kinship information to datas | 
-| [data_final_var-2.qmd](hhttps://github.com/olayabucaro/leaving4life/blob/e96f57be6c62146be93b9d5c0c55af59ebb5e31f/kinship_03/data_final_var-2.md)  | Create final dataset for analysis | 
+| [data_final_var-2.qmd](https://github.com/olayabucaro/leaving4life/blob/e96f57be6c62146be93b9d5c0c55af59ebb5e31f/kinship_03/data_final_var-2.md)  | Create final dataset for analysis | 
 
 ## Analysis
 
