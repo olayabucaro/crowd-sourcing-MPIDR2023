@@ -128,7 +128,7 @@ ggsave(
 ## Death country Model - Only Individuals With Siblings
 
 ``` r
-# Model b1 - destination country
+# Model b2 - destination country
 b2 <- lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|famid),
          data = data_only_siblings)
 ```
@@ -189,5 +189,38 @@ ggsave(
   height = 150,
   units = "mm",
   compression = "lzw"
+)
+```
+
+``` r
+# Model b1 - destination country
+b1 <- lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|famid),
+         data = data_par_complete)
+
+cov.labs <- c("Migrant", "Canada", "South Africa", "Australia", 
+              "New Zealand", "United States of America")
+
+tblb1 <- stargazer(a1, b1,
+                 type = "html",
+                 column.labels = c("Migrant", "Country of Death"),
+                 covariate.labels = cov.labs,
+                 dep.var.caption = "Dependent variable: Age at Death",
+                 dep.var.labels = "",
+                 keep.stat = c("n"),
+                 add.lines=list(c("Sibling random effects", "Yes", "Yes")),
+                 out = paste0(params$save_path, "tableb1.html")
+)
+```
+
+``` r
+tblb2 <- stargazer(a2, b2,
+                 type = "html",
+                 column.labels = c("Migrant", "Country of Death"),
+                 covariate.labels = cov.labs,
+                 dep.var.caption = "Dependent variable: Age at Death",
+                 dep.var.labels = "",
+                 keep.stat = c("n"),
+                 add.lines=list(c("Sibling random effects", "Yes", "Yes")),
+                 out = paste0(params$save_path, "tableb2.html")
 )
 ```

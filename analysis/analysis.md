@@ -5,7 +5,6 @@ Analysis - Main Results
 
 ``` r
 library(dplyr)
-library(stargazer)
 library(marginaleffects)
 library(lme4)
 library(margins)
@@ -76,10 +75,10 @@ figure1 <- birth_ame %>%
   ylab("Average Marginal Effect") + 
   theme_bw() + 
   theme(axis.text.x = element_text(angle=35, margin = margin(t = 2, unit = "mm"))) + 
-  scale_x_discrete(labels=c("1730", "1740", "1750", "1760", "1770", "1780",
-                            "1790","1800", "1810", "1820", "1830", "1840", 
-                            "1850", "1860", "1870", "1880", "1890")) +
-  scale_y_continuous(breaks = seq(1, 9, by = 1), limits = c(1.1,9.4))
+  scale_x_discrete(labels=c("1735", "1745", "1755", "1765", "1775", "1785",
+                            "1795", "1805", "1815", "1825", "1835", "1845", 
+                            "1855", "1865", "1875", "1885")) +
+  scale_y_continuous(breaks = seq(1, 10, by = 1), limits = c(1.1,9.7))
 
 ggsave(
   plot = figure1,
@@ -124,14 +123,18 @@ b1_ame <- b1_ame %>%
 ### Plot Figure 2
 
 ``` r
-x2 <- data.frame(factor = 
-                 c(" ", "Australia", "Canada", "New Zealand", 
-                   "South Africa", "USA", "UU" ), 
-                 AME = rep(5.93, 7), gp = rep(1, 7))
+birth_mm_mig <- margins(a1, variables = "migrant")
+birth_ame_mig <- summary(birth_mm_mig)
 
-figure2 <- ggplot(x2, aes(x=factor, y=AME, group=gp)) + 
+a1_mig <- data.frame(factor = 
+                 c("  ", "Australia", "Canada", "New Zealand", 
+                   "South Africa", "USA", "UU" ), 
+                 AME = rep(birth_ame_mig$AME, 7), gp = rep(1, 7))
+
+figure2 <- ggplot(a1_mig, aes(x=factor, y=AME, group=gp)) + 
   geom_line(colour="#116656", linetype="dashed") +
-  geom_ribbon(aes(ymin = 5.68, ymax = 6.18), fill = "#116656", alpha = 0.3) +
+  geom_ribbon(aes(ymin = birth_ame_mig$lower, ymax = birth_ame_mig$upper), 
+              fill = "#116656", alpha = 0.3) +
   geom_point(data = b1_ame, aes(x=factor, y=AME, group=factor)) + 
   geom_errorbar(data = b1_ame, aes(
     ymin = lower,
@@ -142,7 +145,7 @@ figure2 <- ggplot(x2, aes(x=factor, y=AME, group=gp)) +
        y = "Average Marginal Effect") +
   theme_bw() +
   theme(legend.position = "none") +
-  scale_y_continuous(breaks = seq(1, 11, by = 1), limits = c(1.1,11.2))
+  scale_y_continuous(breaks = seq(0, 11, by = 1), limits = c(0.5,11.2))
  
 ggsave(
   plot = figure2,
@@ -251,7 +254,7 @@ figure3 <- mig_mar_av %>%
 ``` r
 ggsave(
   plot = figure3,
-  filename = paste0(params$save_path, "figure4.pdf"),
+  filename = paste0(params$save_path, "figure3.pdf"),
   width = 150,
   height = 100,
   units = "mm"

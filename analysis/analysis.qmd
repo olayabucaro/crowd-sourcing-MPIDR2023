@@ -3,7 +3,7 @@ title: "Analysis - Main Results"
 format: gfm
 params:
   path_data: "../data/data.csv"
-  save_path: "../analysis/analysis_output/"
+  save_path: "../output/analysis/"
 ---
 
 ## Analysis
@@ -12,7 +12,6 @@ params:
 #| output: false
 
 library(dplyr)
-library(stargazer)
 library(marginaleffects)
 library(lme4)
 library(margins)
