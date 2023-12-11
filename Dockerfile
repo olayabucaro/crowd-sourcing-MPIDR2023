@@ -1,4 +1,4 @@
-FROM rocker/rstudio:4.3.1
+FROM rocker/tidyverse:4.3.1
 LABEL maintainer='Name Name'
 COPY --chown=${NB_USER} . ${HOME}
 USER ${NB_USER}
