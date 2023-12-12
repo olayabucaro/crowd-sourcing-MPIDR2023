@@ -1,4 +1,4 @@
-FROM rocker/tidyverse:4.3.1
+FROM rocker/tidyverse:4.2.3
 LABEL maintainer='Name Name'
 
 ENV NB_USER=rstudio
