@@ -2,9 +2,10 @@ FROM rocker/tidyverse:4.2.3
 LABEL maintainer='Name Name'
 
 ENV NB_USER=rstudio
-USER ${NB_USER}
+
 WORKDIR /home/${NB_USER}
 COPY --chown=${NB_USER} . ${HOME}
+USER ${NB_USER}
 
 RUN R -e "install.packages( c( \
     'lme4', \
