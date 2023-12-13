@@ -2,7 +2,7 @@ FROM rocker/tidyverse:4.2.3
 LABEL maintainer='Name Name'
 
 WORKDIR /home/${NB_USER}
-COPY --chown=${NB_USER} .
+COPY --chown=${NB_USER} . /home/${NB_USER}
 USER ${NB_USER}
 
 RUN R -e "install.packages( c( \
