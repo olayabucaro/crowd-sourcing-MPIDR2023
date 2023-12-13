@@ -2,7 +2,7 @@
 
 Repository for the article Leaving for Life:
 
-All the code is available in a stable environment in the Binder running R version 4.3.1 and R packages from the Posit Public Package Manager CRAN snapshot [2023-07-31](https://packagemanager.posit.co/cran/2023-07-31/src/contrib/PACKAGES) 
+All the code is available in a stable environment in the Binder running R version 4.2.3 and R packages from the Posit Public Package Manager CRAN snapshot [2023-07-31](https://packagemanager.posit.co/cran/2023-07-31/src/contrib/PACKAGES) 
 
 Due to processing power limitations in Binder not all computations can be executed 
 
