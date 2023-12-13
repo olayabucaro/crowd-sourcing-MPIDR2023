@@ -1,7 +1,7 @@
 FROM rocker/tidyverse:4.2.3
 LABEL maintainer='Name Name'
 
-WORKDIR /home/${NB_USER}
+WORKDIR /home/rstudio
 COPY --chown=${NB_USER} . ./
 USER ${NB_USER}
 
