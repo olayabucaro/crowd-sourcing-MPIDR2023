@@ -12,7 +12,7 @@ Press the Binder badge to launch the Binder Rstudio environment:
 [![Launch Rstudio Binder](http://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/olayabucaro/leaving4life/main?urlpath=rstudio)
 <!-- badges: end -->
 
-Environment slso avalibe in a docker container.
+Environment also avalibe in a docker container.
 
 ## Code and data for Leaving for Life 
 
