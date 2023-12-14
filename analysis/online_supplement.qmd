@@ -122,22 +122,24 @@ figureb1 <- birth_ame %>%
   scale_y_continuous(breaks = seq(-1, 12, by = 1), limits = c(-1.5,11.5))
 
 
-ggsave(
-  plot = figureb1,
-  filename = paste0(params$save_path, "figureb1.pdf"),
-  width = 200,
-  height = 150,
-  units = "mm"
-  )
+# ggsave(
+#   plot = figureb1,
+#   filename = paste0(params$save_path, "figureb1.pdf"),
+#   width = 200,
+#   height = 150,
+#   units = "mm"
+#   )
+# 
+# ggsave(
+#   plot = figureb1,
+#   filename = paste0(params$save_path, "figureb1.tiff"),
+#   width = 200,
+#   height = 150,
+#   units = "mm",
+#   compression = "lzw"
+# )
 
-ggsave(
-  plot = figureb1,
-  filename = paste0(params$save_path, "figureb1.tiff"),
-  width = 200,
-  height = 150,
-  units = "mm",
-  compression = "lzw"
-)
+figureb1
 
 ```
 
@@ -187,27 +189,28 @@ figureb2 <- ggplot(a2_mig, aes(x=factor, y=AME, group=gp)) +
   theme(legend.position = "none") +
   scale_y_continuous(breaks = seq(1, 11, by = 1), limits = c(1.1,11.5))
  
-ggsave(
-  plot = figureb2,
-  filename = paste0(params$save_path, "figureb2.pdf"),
-  width = 150,
-  height = 150,
-  units = "mm"
-)
+# ggsave(
+#   plot = figureb2,
+#   filename = paste0(params$save_path, "figureb2.pdf"),
+#   width = 150,
+#   height = 150,
+#   units = "mm"
+# )
+# 
+# ggsave(
+#   plot = figureb2,
+#   filename = paste0(params$save_path, "figureb2.tiff"),
+#   width = 150,
+#   height = 150,
+#   units = "mm",
+#   compression = "lzw"
+# )
 
-ggsave(
-  plot = figureb2,
-  filename = paste0(params$save_path, "figureb2.tiff"),
-  width = 150,
-  height = 150,
-  units = "mm",
-  compression = "lzw"
-)
+figureb2
 
 ```
 
 ```{r Table B1}
-#| output: false
 
 # Model b1 - destination country
 b1 <- lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|famid),
@@ -216,30 +219,49 @@ b1 <- lmer(deathage ~ death_country * birth10 + gender + sib_size_cat + (1|famid
 cov.labs <- c("Migrant", "Canada", "South Africa", "Australia", 
               "New Zealand", "United States of America")
 
+# tblb1 <- stargazer(a1, b1,
+#                  type = "html",
+#                  column.labels = c("Migrant", "Country of Death"),
+#                  covariate.labels = cov.labs,
+#                  dep.var.caption = "Dependent variable: Age at Death",
+#                  dep.var.labels = "",
+#                  keep.stat = c("n"),
+#                  add.lines=list(c("Sibling random effects", "Yes", "Yes")),
+#                  out = paste0(params$save_path, "tableb1.html")
+# )
+
 tblb1 <- stargazer(a1, b1,
-                 type = "html",
+                 type = "text",
                  column.labels = c("Migrant", "Country of Death"),
                  covariate.labels = cov.labs,
                  dep.var.caption = "Dependent variable: Age at Death",
                  dep.var.labels = "",
                  keep.stat = c("n"),
-                 add.lines=list(c("Sibling random effects", "Yes", "Yes")),
-                 out = paste0(params$save_path, "tableb1.html")
+                 add.lines=list(c("Sibling random effects", "Yes", "Yes"))
 )
 
 ```
 
 ```{r Table B2}
-#| output: false
+
+# tblb2 <- stargazer(a2, b2,
+#                  type = "html",
+#                  column.labels = c("Migrant", "Country of Death"),
+#                  covariate.labels = cov.labs,
+#                  dep.var.caption = "Dependent variable: Age at Death",
+#                  dep.var.labels = "",
+#                  keep.stat = c("n"),
+#                  add.lines=list(c("Sibling random effects", "Yes", "Yes")),
+#                  out = paste0(params$save_path, "tableb2.html")
+# )
 
 tblb2 <- stargazer(a2, b2,
-                 type = "html",
+                 type = "text",
                  column.labels = c("Migrant", "Country of Death"),
                  covariate.labels = cov.labs,
                  dep.var.caption = "Dependent variable: Age at Death",
                  dep.var.labels = "",
                  keep.stat = c("n"),
-                 add.lines=list(c("Sibling random effects", "Yes", "Yes")),
-                 out = paste0(params$save_path, "tableb2.html")
+                 add.lines=list(c("Sibling random effects", "Yes", "Yes"))
 )
 ```

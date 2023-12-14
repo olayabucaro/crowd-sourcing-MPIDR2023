@@ -12,9 +12,9 @@ params:
 #| output: false
 
 library(dplyr)
+library(margins)
 library(marginaleffects)
 library(lme4)
-library(margins)
 library(data.table)
 library(ggplot2)
 library(ggpubr)
@@ -95,22 +95,24 @@ figure1 <- birth_ame %>%
                             "1855", "1865", "1875", "1885")) +
   scale_y_continuous(breaks = seq(1, 10, by = 1), limits = c(1.1,9.7))
 
-ggsave(
-  plot = figure1,
-  filename = paste0(params$save_path, "figure1.pdf"),
-  width = 150,
-  height = 100,
-  units = "mm"
-  )
+# ggsave(
+#   plot = figure1,
+#   filename = paste0(params$save_path, "figure1.pdf"),
+#   width = 150,
+#   height = 100,
+#   units = "mm"
+#   )
+# 
+# ggsave(
+#   plot = figure1,
+#   filename = paste0(params$save_path, "figure1.tiff"),
+#   width = 150,
+#   height = 100,
+#   units = "mm",
+#   compression = "lzw"
+# )
 
-ggsave(
-  plot = figure1,
-  filename = paste0(params$save_path, "figure1.tiff"),
-  width = 150,
-  height = 100,
-  units = "mm",
-  compression = "lzw"
-)
+figure1
 
 ```
 
@@ -161,22 +163,24 @@ figure2 <- ggplot(a1_mig, aes(x=factor, y=AME, group=gp)) +
   theme(legend.position = "none") +
   scale_y_continuous(breaks = seq(0, 11, by = 1), limits = c(0.5,11.2))
  
-ggsave(
-  plot = figure2,
-  filename = paste0(params$save_path, "figure2.pdf"),
-  width = 150,
-  height = 150,
-  units = "mm"
-)
+# ggsave(
+#   plot = figure2,
+#   filename = paste0(params$save_path, "figure2.pdf"),
+#   width = 150,
+#   height = 150,
+#   units = "mm"
+# )
+# 
+# ggsave(
+#   plot = figure2,
+#   filename = paste0(params$save_path, "figure2.tiff"),
+#   width = 150,
+#   height = 150,
+#   units = "mm",
+#   compression = "lzw"
+#)
 
-ggsave(
-  plot = figure2,
-  filename = paste0(params$save_path, "figure2.tiff"),
-  width = 150,
-  height = 150,
-  units = "mm",
-  compression = "lzw"
-)
+figure2
 
 ```
 
@@ -252,23 +256,24 @@ figure3 <- mig_mar_av %>%
   theme_bw()+
   scale_y_continuous(breaks = seq(2, 7, by = 1))
 
-ggsave(
-  plot = figure3,
-  filename = paste0(params$save_path, "figure3.pdf"),
-  width = 150,
-  height = 100,
-  units = "mm"
-)
+# ggsave(
+#   plot = figure3,
+#   filename = paste0(params$save_path, "figure3.pdf"),
+#   width = 150,
+#   height = 100,
+#   units = "mm"
+# )
+# 
+# ggsave(
+#   plot = figure3,
+#   filename = paste0(params$save_path, "figure3.tiff"),
+#   width = 150,
+#   height = 100,
+#   units = "mm",
+#   compression = "lzw"
+# )
 
-ggsave(
-  plot = figure3,
-  filename = paste0(params$save_path, "figure3.tiff"),
-  width = 150,
-  height = 100,
-  units = "mm",
-  compression = "lzw"
-)
-
+figure3
 
 ```
 
@@ -311,21 +316,23 @@ figure4 <- death_mar_av %>%
   theme_bw()+
   facet_wrap(vars(factor))
 
-ggsave(
-  plot = figure4,
-  filename = paste0(params$save_path, "figure4.pdf"),
-  width = 200,
-  height = 150,
-  units = "mm"
-)
+# ggsave(
+#   plot = figure4,
+#   filename = paste0(params$save_path, "figure4.pdf"),
+#   width = 200,
+#   height = 150,
+#   units = "mm"
+# )
+# 
+# ggsave(
+#   plot = figure4,
+#   filename = paste0(params$save_path, "figure4.tiff"),
+#   width = 200,
+#   height = 150,
+#   units = "mm",
+#   compression = "lzw"
+# )
 
-ggsave(
-  plot = figure4,
-  filename = paste0(params$save_path, "figure4.tiff"),
-  width = 200,
-  height = 150,
-  units = "mm",
-  compression = "lzw"
-)
+figure4
 
 ```
